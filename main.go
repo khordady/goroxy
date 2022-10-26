@@ -34,7 +34,6 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 
 	splited := strings.Split(message, " ")
-	//host := strings.Split(splited[1], ":")
 	if splited[0] == "CONNECT" {
 		//message = strings.Replace(message, "CONNECT", "GET", 1)
 		proxy_to_server, e := net.Dial("tcp", splited[1])
@@ -42,11 +41,6 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println("ERROR2 ", e)
 			return
 		}
-		//_, e = proxy_to_server.Write([]byte(message))
-		//if e != nil {
-		//	fmt.Println("ERROR2 ", e)
-		//	return
-		//}
 		lenn, e := client_to_proxy.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
 		if e != nil {
 			fmt.Println("ERROR8 ", e)
@@ -87,8 +81,8 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		fmt.Println("ERROR9 ", err)
 		return
 	}
-	fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
-	fmt.Println(string(buffer[:readLeng]))
+	//fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
+	//fmt.Println(string(buffer[:readLeng]))
 	if readLeng > 0 {
 		_, err := client_to_proxy.Write(buffer[:readLeng])
 		if err != nil {
@@ -104,8 +98,8 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 			fmt.Println("ERROR10 ", err)
 			return
 		}
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
 			if err != nil {
@@ -124,8 +118,8 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
 			if err != nil {
@@ -144,8 +138,8 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 			fmt.Println("ERROR10 ", err)
 			return
 		}
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:")
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
 			if err != nil {
@@ -163,8 +157,8 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	if err != nil {
 		return
 	}
-	fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-	fmt.Println(string(buffer[:readLeng]))
+	//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+	//fmt.Println(string(buffer[:readLeng]))
 	if readLeng > 0 {
 		_, err := proxy_to_server.Write(buffer[:readLeng])
 		if err != nil {
@@ -180,8 +174,8 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
 			if err != nil {
