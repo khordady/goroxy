@@ -1,0 +1,10 @@
+{
+  "Server": "www.google.com",
+  "ClientPort": "8000",
+  "ServerPort": "8000",
+  "ServerEncryption": "Base64",
+  "ClientEncryption": "None",
+  "Authentication": true,
+  "User": "Goroxy",
+  "Password" : "Goroxy"
+}
