@@ -1,36 +1,111 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net"
+	"os"
 	"strings"
+	"time"
 )
 
+type strServerConfig struct {
+	ListenPort          string
+	ListenEncryption    string
+	ListenEncryptionKey string
+	Authentication      bool
+	UserName            string
+	Password            string
+}
+
+var jjServerConfig strServerConfig
+
 func main() {
+	fmt.Println("Reading server-config.json")
+	readFile, err := os.Open("server-config.json")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	var fileLines strings.Builder
+
+	for fileScanner.Scan() {
+		fileLines.WriteString(fileScanner.Text())
+	}
+
+	final := strings.ReplaceAll(fileLines.String(), " ", "")
+	final = strings.ReplaceAll(final, "\n", "")
+
+	readFile.Close()
+
+	err = json.NewDecoder(bytes.NewReader([]byte(final))).Decode(&jjServerConfig)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	fmt.Println("Start server...")
 
-	ln, _ := net.Listen("tcp", ":8000")
+	ln, _ := net.Listen("tcp", ":"+jjServerConfig.ListenPort)
 
 	for {
 		conn, _ := ln.Accept()
-		handleSocket(conn)
+		err = conn.SetDeadline(time.Time{})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		go handleSocket(conn)
 	}
 }
 
 func handleSocket(client_to_proxy net.Conn) {
-	buffer := make([]byte, 32*1024)
-	_, e := client_to_proxy.Read(buffer)
+	buffer := make([]byte, 8*1024)
+	length, e := client_to_proxy.Read(buffer)
 	if e != nil {
 		fmt.Println("ERROR1 ", e)
 		return
 	}
-	message := string(buffer)
-	a := strings.Count(message, "\r\n")
-	fmt.Println(message)
-	fmt.Println(a)
 	if e != nil {
 		fmt.Println("ERROR1 ", e)
 		return
+	}
+
+	var message string
+	switch jjServerConfig.ListenEncryption {
+	case "None":
+		message = string(buffer[:length])
+		break
+
+	case "Base64":
+		message = string(decodeBase64(buffer, length))
+		break
+
+	case "AES":
+		message = string(decryptAES(buffer, length, jjServerConfig.ListenEncryptionKey))
+		break
+	}
+
+	if !strings.Contains(message, "\r\n") {
+		fmt.Println("Wrong UserPass")
+		return
+	}
+
+	if jjServerConfig.Authentication {
+		splited := strings.Split(message, "\r\n")
+		splited = strings.Split(splited[0], ",")
+		if len(splited) > 1 {
+			if splited[0] != jjServerConfig.UserName || splited[1] != jjServerConfig.Password {
+				fmt.Println("Wrong UserPass")
+				return
+			}
+		}
 	}
 
 	splited := strings.Split(message, " ")
