@@ -1,8 +1,8 @@
 {
   "ListenPort": "8001",
-  "ListenEncryption": "None",
+  "ListenEncryption": "Base64",
   "ListenEncryptionKey": "SOMETHING 16 bit",
-  "Authentication": false,
+  "Authentication": true,
   "UserName": "Goroxy",
   "Password": "Goroxy"
 }
