@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -57,7 +58,8 @@ func encodeBase64(buffer []byte) []byte {
 	b64 := make([]byte, lengt)
 	base64.StdEncoding.Encode(b64, buffer)
 
-	return b64[:lengt]
+	fmt.Println("MAX: " + strconv.Itoa(lengt) + " Real: " + strconv.Itoa(len(b64)))
+	return b64
 }
 
 func decodeBase64(buffer []byte, length int) []byte {
@@ -67,7 +69,8 @@ func decodeBase64(buffer []byte, length int) []byte {
 		fmt.Println(err)
 		return nil
 	}
-	return b64[:dlength]
+	fmt.Println("MAX: " + strconv.Itoa(dlength) + " Real: " + strconv.Itoa(len(b64)))
+	return b64
 }
 
 func processReceived(buffer []byte, length int, authentication bool, username string, password string, crypto string, crypto_key string) string {
