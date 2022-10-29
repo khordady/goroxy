@@ -61,6 +61,7 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+		fmt.Println("Connection Received")
 		go handleSocket(conn)
 	}
 }
