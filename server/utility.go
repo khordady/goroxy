@@ -81,7 +81,6 @@ func processReceived(buffer []byte, length int, authentication bool, username st
 		break
 
 	case "AES":
-		buffer = decodeBase64(buffer, len(buffer))
 		buffer = decryptAES(buffer, len(buffer), crypto_key)
 	}
 
