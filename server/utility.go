@@ -11,7 +11,8 @@ import (
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
-	if length%len(key) > 0 {
+	lenn := length % len(key)
+	if lenn > 0 {
 		length = length + (length % len(key))
 	}
 	var err error
@@ -24,7 +25,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	}
 	msgByte := make([]byte, length)
 
-	for i, j := 0, 16; i < length; i, j = i+16, j+16 {
+	for i, j := 0, 16; i < length-lenn; i, j = i+16, j+16 {
 		cc.Encrypt(msgByte[i:j], buffer[i:j])
 	}
 	return msgByte
@@ -54,7 +55,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 func encodeBase64(buffer []byte) []byte {
 	lengt := base64.StdEncoding.EncodedLen(len(buffer))
 	b64 := make([]byte, lengt)
-	base64.StdEncoding.Encode(b64, buffer[:lengt])
+	base64.StdEncoding.Encode(b64, buffer)
 
 	return b64[:lengt]
 }
