@@ -45,8 +45,7 @@ func main() {
 		fileLines.WriteString(fileScanner.Text())
 	}
 
-	final := strings.ReplaceAll(fileLines.String(), " ", "")
-	final = strings.ReplaceAll(final, "\n", "")
+	final := strings.ReplaceAll(fileLines.String(), "\n", "")
 
 	readFile.Close()
 
@@ -96,11 +95,11 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 	switch jjConfig.SendEncryption {
 	case "Base64":
-		message = append(message, encodeBase64(message)...)
+		message = encodeBase64(message)
 		break
 
 	case "AES":
-		message = append(message, encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)...)
+		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
 		break
 	}
 

@@ -38,8 +38,7 @@ func main() {
 		fileLines.WriteString(fileScanner.Text())
 	}
 
-	final := strings.ReplaceAll(fileLines.String(), " ", "")
-	final = strings.ReplaceAll(final, "\n", "")
+	final := strings.ReplaceAll(fileLines.String(), "\n", "")
 
 	readFile.Close()
 
