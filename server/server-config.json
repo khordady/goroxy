@@ -4,5 +4,5 @@
   "ListenEncryptionKey": "SOMETHING 16 bit",
   "Authentication": true,
   "UserName": "Goroxy",
-  "Password" : "Goroxy"
+  "Password": "Goroxy"
 }
