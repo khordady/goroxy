@@ -99,7 +99,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		break
 
 	case "AES":
-		message = encodeBase64(encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey))
+		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
 		break
 	}
 
