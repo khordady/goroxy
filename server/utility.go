@@ -20,7 +20,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 		}
 	}
 	msgByte := make([]byte, length)
-	cc.Decrypt(msgByte, buffer)
+	cc.Encrypt(msgByte, buffer)
 
 	return msgByte
 }
@@ -47,7 +47,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 func encodeBase64(buffer []byte) []byte {
 	lengt := base64.StdEncoding.EncodedLen(len(buffer))
 	b64 := make([]byte, lengt)
-	base64.StdEncoding.Encode(b64, buffer)
+	base64.StdEncoding.Encode(b64, buffer[:lengt])
 
 	return b64[:lengt]
 }
