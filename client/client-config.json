@@ -1,12 +1,15 @@
 {
-  "Server": "192.168.1.101",
-  "ClientPort": "8000",
-  "ServerPort": "8001",
-  "SendEncryption": "None",
-  "SendEncryptionKey": "SOMETHING 16 bit",
+  "ListenPort": "8000",
   "ListenEncryption": "None",
   "ListenEncryptionKey": "SOMETHING 16 bit",
-  "Authentication": false,
-  "UserName": "Goroxy",
-  "Password": "Goroxy"
+  "ListenAuthentication": false,
+  "ListenUserName": "Goroxy",
+  "ListenPassword": "Goroxy",
+  "Server": "192.168.1.101",
+  "ServerPort": "8001",
+  "SendEncryption": "Base64",
+  "SendEncryptionKey": "SOMETHING 16 bit",
+  "SendAuthentication": true,
+  "SendUserName": "Goroxy",
+  "SendPassword": "Goroxy"
 }

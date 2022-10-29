@@ -12,19 +12,22 @@ import (
 )
 
 type strClientConfig struct {
-	Server              string
-	ClientPort          string
-	ServerPort          string
-	SendEncryption      string
-	SendEncryptionKey   string
-	ListenEncryption    string
-	ListenEncryptionKey string
-	Authentication      bool
-	UserName            string
-	Password            string
+	ListenPort           string
+	ListenEncryption     string
+	ListenEncryptionKey  string
+	ListenAuthentication bool
+	ListenUserName       string
+	ListenPassword       string
+	Server               string
+	ServerPort           string
+	SendEncryption       string
+	SendEncryptionKey    string
+	SendAuthentication   bool
+	SendUserName         string
+	SendPassword         string
 }
 
-var jjClientConfig strClientConfig
+var jjConfig strClientConfig
 
 func main() {
 	fmt.Println("Reading client-config.json")
@@ -47,7 +50,7 @@ func main() {
 
 	readFile.Close()
 
-	err = json.NewDecoder(bytes.NewReader([]byte(final))).Decode(&jjClientConfig)
+	err = json.NewDecoder(bytes.NewReader([]byte(final))).Decode(&jjConfig)
 
 	if err != nil {
 		fmt.Println(err)
@@ -56,7 +59,7 @@ func main() {
 
 	fmt.Println("GOROXY: Start Client Listening ...")
 
-	ln, _ := net.Listen("tcp", ":"+jjClientConfig.ClientPort)
+	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
 	for {
 		conn, _ := ln.Accept()
@@ -65,48 +68,51 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		go handleBrowserTOCLient(conn)
+		fmt.Println("Received")
+		go handleBrowserToClient(conn)
 	}
 }
 
-func handleBrowserTOCLient(browser_to_client net.Conn) {
+func handleBrowserToClient(browser_to_client net.Conn) {
 	buffer := make([]byte, 8*1024)
 	length, e := browser_to_client.Read(buffer)
 	if e != nil {
-		fmt.Println("ERROR1 ", e)
+		fmt.Println("ERR1 ", e)
+		return
+	}
+
+	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
+		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
+	if request == "" {
 		return
 	}
 
 	var message []byte
 
-	if jjClientConfig.Authentication {
-		message = append([]byte(jjClientConfig.UserName+","+jjClientConfig.Password+"\r\n"), buffer[:length]...)
+	if jjConfig.SendAuthentication {
+		message = []byte(jjConfig.SendUserName + "," + jjConfig.SendPassword + "\r\n")
 	}
-	fmt.Println(string(message))
+	message = append(message, []byte(request)...)
 
-	switch jjClientConfig.ListenEncryption {
-	case "None":
-		buffer = buffer[:length]
-		break
-
+	switch jjConfig.SendEncryption {
 	case "Base64":
-		buffer = encodeBase64(buffer, length)
+		message = append(message, encodeBase64(message)...)
 		break
 
 	case "AES":
-		buffer = encryptAES(buffer, length, jjClientConfig.ListenEncryptionKey)
+		message = append(message, encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)...)
 		break
 	}
 
-	client_to_server, e := net.Dial("tcp", jjClientConfig.Server+":"+jjClientConfig.ServerPort)
+	client_to_server, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
 	if e != nil {
-		fmt.Println("ERROR2 ", e)
+		fmt.Println("ERR2 ", e)
 		return
 	}
 
 	_, e = client_to_server.Write(message)
 	if e != nil {
-		fmt.Println("ERROR8 ", e)
+		fmt.Println("ERR3 ", e)
 		return
 	}
 
@@ -118,13 +124,16 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
 		if err != nil {
-			fmt.Println("ERROR10 ", err)
+			fmt.Println("ERR5 ", err)
 			return
 		}
 		if readLeng > 0 {
+			//fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client:")
+			//fmt.Println(string(buffer[:readLeng]))
+
 			_, err := client_to_server.Write(buffer[:readLeng])
 			if err != nil {
-				fmt.Println("ERR4 ", err)
+				fmt.Println("ERR6 ", err)
 				return
 			}
 		}
@@ -139,9 +148,12 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		return
 	}
 	if readLeng > 0 {
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		//fmt.Println(string(buffer[:readLeng]))
+
 		_, err := browser_to_client.Write(buffer[:readLeng])
 		if err != nil {
-			fmt.Println("ERR5 ", err)
+			fmt.Println("ERR7 ", err)
 			return
 		}
 	}
@@ -158,7 +170,7 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		if readLeng > 0 {
 			_, err := browser_to_client.Write(buffer[:readLeng])
 			if err != nil {
-				fmt.Println("ERR5 ", err)
+				fmt.Println("ERR8 ", err)
 				return
 			}
 		}

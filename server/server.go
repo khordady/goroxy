@@ -12,15 +12,15 @@ import (
 )
 
 type strServerConfig struct {
-	ListenPort          string
-	ListenEncryption    string
-	ListenEncryptionKey string
-	Authentication      bool
-	UserName            string
-	Password            string
+	ListenPort           string
+	ListenEncryption     string
+	ListenEncryptionKey  string
+	ListenAuthentication bool
+	ListenUserName       string
+	ListenPassword       string
 }
 
-var jjServerConfig strServerConfig
+var jjConfig strServerConfig
 
 func main() {
 	fmt.Println("Reading server-config.json")
@@ -43,7 +43,7 @@ func main() {
 
 	readFile.Close()
 
-	err = json.NewDecoder(bytes.NewReader([]byte(final))).Decode(&jjServerConfig)
+	err = json.NewDecoder(bytes.NewReader([]byte(final))).Decode(&jjConfig)
 
 	if err != nil {
 		fmt.Println(err)
@@ -52,7 +52,7 @@ func main() {
 
 	fmt.Println("Start server...")
 
-	ln, _ := net.Listen("tcp", ":"+jjServerConfig.ListenPort)
+	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
 	for {
 		conn, _ := ln.Accept()
@@ -73,43 +73,10 @@ func handleSocket(client_to_proxy net.Conn) {
 		fmt.Println("ERROR1 ", e)
 		return
 	}
-	if e != nil {
-		fmt.Println("ERROR2 ", e)
+	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
+		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
+	if message == "" {
 		return
-	}
-
-	var message string
-	switch jjServerConfig.ListenEncryption {
-	case "None":
-		message = string(buffer[:length])
-		break
-
-	case "Base64":
-		message = string(decodeBase64(buffer, len(buffer)))
-		break
-
-	case "AES":
-		message = string(decryptAES(buffer, len(buffer), jjServerConfig.ListenEncryptionKey))
-		break
-	}
-
-	fmt.Println(message)
-
-	if !strings.Contains(message, "\r\n") {
-		fmt.Println("Wrong UserPass")
-		return
-	}
-
-	if jjServerConfig.Authentication {
-		splited := strings.Split(message, "\r\n")
-		splited = strings.Split(splited[0], ",")
-		if len(splited) > 1 {
-			message = message[strings.Index(message, "\r\n")+2:]
-			if splited[0] != jjServerConfig.UserName || splited[1] != jjServerConfig.Password {
-				fmt.Println("Wrong UserPass")
-				return
-			}
-		}
 	}
 
 	splited := strings.Split(message, " ")
