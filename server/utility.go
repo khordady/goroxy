@@ -11,9 +11,10 @@ import (
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
-	lenn := length % len(key)
+	key_length := len(key)
+	lenn := length % key_length
 	if lenn > 0 {
-		length = length + (length % len(key))
+		length = length + lenn
 	}
 	var err error
 	if cc == nil {
@@ -25,13 +26,14 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	}
 	msgByte := make([]byte, length)
 
-	for i, j := 0, 16; i < length-lenn; i, j = i+16, j+16 {
+	for i, j := 0, key_length; i < length-lenn; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], buffer[i:j])
 	}
 	return msgByte
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
+	key_length := len(key)
 	var err error
 	if cc == nil {
 		cc, err = aes.NewCipher([]byte(key))
@@ -46,7 +48,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	}
 	msgByte := make([]byte, length)
 
-	for i, j := 0, 16; i < length; i, j = i+16, j+16 {
+	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
 		cc.Decrypt(msgByte[i:j], buffer[i:j])
 	}
 	return msgByte
@@ -57,17 +59,17 @@ func encodeBase64(buffer []byte) []byte {
 	b64 := make([]byte, lengt)
 	base64.StdEncoding.Encode(b64, buffer)
 
-	return b64[:lengt]
+	return b64
 }
 
 func decodeBase64(buffer []byte, length int) []byte {
 	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
-	dlength, err := base64.StdEncoding.Decode(b64, buffer[:length])
+	_, err := base64.StdEncoding.Decode(b64, buffer[:length])
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
-	return b64[:dlength]
+	return b64
 }
 
 func processReceived(buffer []byte, length int, authentication bool, username string, password string, crypto string, crypto_key string) string {
@@ -81,6 +83,7 @@ func processReceived(buffer []byte, length int, authentication bool, username st
 		break
 
 	case "AES":
+		buffer = decodeBase64(buffer, len(buffer))
 		buffer = decryptAES(buffer, len(buffer), crypto_key)
 	}
 
