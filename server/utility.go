@@ -11,6 +11,9 @@ import (
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
+	if length%len(key) > 0 {
+		length = length + (length % len(key))
+	}
 	var err error
 	if cc == nil {
 		cc, err = aes.NewCipher([]byte(key))
@@ -20,8 +23,10 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 		}
 	}
 	msgByte := make([]byte, length)
-	cc.Encrypt(msgByte, buffer)
 
+	for i, j := 0, 16; i < length; i, j = i+16, j+16 {
+		cc.Encrypt(msgByte[i:j], buffer[i:j])
+	}
 	return msgByte
 }
 
@@ -39,8 +44,10 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 		return nil
 	}
 	msgByte := make([]byte, length)
-	cc.Decrypt(msgByte, buffer[:length])
 
+	for i, j := 0, 16; i < length; i, j = i+16, j+16 {
+		cc.Decrypt(msgByte[i:j], buffer[i:j])
+	}
 	return msgByte
 }
 
