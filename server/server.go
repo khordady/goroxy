@@ -51,7 +51,7 @@ func main() {
 
 	fmt.Println("Start server...")
 
-	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
+	ln, _ := net.Listen("tcp", "185.221.237.166:"+jjConfig.ListenPort)
 
 	for {
 		conn, _ := ln.Accept()
@@ -70,7 +70,7 @@ func handleSocket(client_to_proxy net.Conn) {
 	reader := bufio.NewReader(client_to_proxy)
 	fmt.Println("Start")
 	for {
-		readBytes, err := reader.ReadString('\n')
+		readBytes, err := reader.ReadByte()
 		if err != nil {
 			fmt.Println("ERROR1 ", err)
 			return
@@ -79,7 +79,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		if string(readBytes) == "\r\n" {
 			break
 		}
-		buffer = buffer + readBytes
+		//buffer = buffer + readBytes
 	}
 
 	message := processReceived([]byte(buffer), len(buffer), jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
