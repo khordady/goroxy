@@ -78,14 +78,20 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
+	fmt.Println("MESSSSSSSSSAGE")
+	fmt.Println(message)
+
 	splited := strings.Split(message, " ")
 	if splited[0] == "CONNECT" {
-		//message = strings.Replace(message, "CONNECT", "GET", 1)
+		fmt.Println("DIIIIIIIIIIIIAL")
+		fmt.Println(splited[1])
 		proxy_to_server, e := net.Dial("tcp", splited[1])
 		if e != nil {
 			fmt.Println("ERROR3 ", e)
 			return
 		}
+		fmt.Println("Connected successfully")
+		fmt.Println(splited[1])
 		lenn, e := client_to_proxy.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
