@@ -5,7 +5,7 @@
   "ListenAuthentication": false,
   "ListenUserName": "Goroxy",
   "ListenPassword": "Goroxy",
-  "Server": "185.221.237.166",
+  "Server": "server",
   "ServerPort": "7373",
   "SendEncryption": "None",
   "SendEncryptionKey": "SOMETHING 16 bit",
