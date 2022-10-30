@@ -68,12 +68,14 @@ func main() {
 func handleSocket(client_to_proxy net.Conn) {
 	var buffer string
 	reader := bufio.NewReader(client_to_proxy)
+	fmt.Println("Start")
 	for {
 		readBytes, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("ERROR1 ", err)
 			return
 		}
+		fmt.Println(string(readBytes))
 		if string(readBytes) == "\r\n" {
 			break
 		}
