@@ -66,13 +66,21 @@ func main() {
 }
 
 func handleSocket(client_to_proxy net.Conn) {
-	buffer := make([]byte, 9*1024)
-	length, e := client_to_proxy.Read(buffer)
-	if e != nil {
-		fmt.Println("ERROR1 ", e)
-		return
+	var buffer string
+	reader := bufio.NewReader(client_to_proxy)
+	for {
+		readBytes, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("ERROR1 ", err)
+			return
+		}
+		if string(readBytes) == "\r\n" {
+			break
+		}
+		buffer = buffer + readBytes
 	}
-	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
+
+	message := processReceived([]byte(buffer), len(buffer), jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if message == "" {
 		return

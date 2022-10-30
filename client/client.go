@@ -114,6 +114,12 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		fmt.Println("ERR3 ", e)
 		return
 	}
+	//send these to ensure end of packet at server side
+	_, e = client_to_server.Write([]byte("\r\n"))
+	if e != nil {
+		fmt.Println("ERR3 ", e)
+		return
+	}
 
 	read(client_to_server, browser_to_client)
 }
