@@ -51,7 +51,7 @@ func main() {
 
 	fmt.Println("Start server...")
 
-	ln, _ := net.Listen("tcp", "185.221.237.166:"+jjConfig.ListenPort)
+	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
 	for {
 		conn, _ := ln.Accept()
