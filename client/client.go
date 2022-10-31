@@ -94,9 +94,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	message = append(message, []byte(request)...)
 
 	switch jjConfig.SendEncryption {
-	case "Base64":
-		message = encodeBase64(message)
-		break
+	//case "Base64":
+	//	message = encodeBase64(message)
+	//	break
 
 	case "AES":
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
@@ -110,12 +110,6 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	_, e = client_to_server.Write(message)
-	if e != nil {
-		fmt.Println("ERR3 ", e)
-		return
-	}
-	//send these to ensure end of packet at server side
-	_, e = client_to_server.Write([]byte("\r\n"))
 	if e != nil {
 		fmt.Println("ERR3 ", e)
 		return
