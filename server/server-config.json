@@ -1,8 +1,8 @@
 {
   "ListenPort": "8181",
-  "ListenEncryption": "None",
+  "ListenEncryption": "AES",
   "ListenEncryptionKey": "SOMETHING 16 bit",
-  "ListenAuthentication": false,
+  "ListenAuthentication": true,
   "ListenUsers": [
     {
       "ListenUserName": "Goroxy",
