@@ -45,7 +45,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 		fmt.Println(err)
 		return nil
 	}
-	msgByte := make([]byte, length)
+	msgByte := make([]byte, length+key_length)
 
 	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
 		cc.Decrypt(msgByte[i:j], buffer[i:j])
@@ -83,7 +83,7 @@ func processReceived(buffer []byte, length int, authentication bool, username st
 
 	case "AES":
 		//buffer = decodeBase64(buffer, len(buffer))
-		buffer = decryptAES(buffer, len(buffer), crypto_key)
+		buffer = decryptAES(buffer, length, crypto_key)
 	}
 
 	message := string(buffer)

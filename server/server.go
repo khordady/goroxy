@@ -73,6 +73,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
+	fmt.Println(length)
 	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if message == "" {
@@ -81,6 +82,7 @@ func handleSocket(client_to_proxy net.Conn) {
 
 	fmt.Println("MESSSSSSSSSAGE")
 	fmt.Println(message)
+	fmt.Println(len(message))
 
 	splited := strings.Split(message, " ")
 	if splited[0] == "CONNECT" {
