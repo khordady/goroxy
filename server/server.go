@@ -16,8 +16,12 @@ type strServerConfig struct {
 	ListenEncryption     string
 	ListenEncryptionKey  string
 	ListenAuthentication bool
-	ListenUserName       string
-	ListenPassword       string
+	ListenUsers          []strUser
+}
+
+type strUser struct {
+	ListenUserName string
+	ListenPassword string
 }
 
 var jjConfig strServerConfig
@@ -73,32 +77,24 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
+	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if message == "" {
 		return
 	}
 
-	fmt.Println("MESSSSSSSSSAGE")
-	fmt.Println(message)
-
 	splited := strings.Split(message, " ")
 	if splited[0] == "CONNECT" {
-		fmt.Println("DIIIIIIIIIIIIAL")
-		fmt.Println(splited[1])
 		proxy_to_server, e := net.Dial("tcp", splited[1])
 		if e != nil {
 			fmt.Println("ERROR3 ", e)
 			return
 		}
-		fmt.Println("Connected successfully")
-		fmt.Println(splited[1])
-		lenn, e := client_to_proxy.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
+		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
 		}
-		fmt.Println(lenn)
 
 		read443(client_to_proxy, proxy_to_server)
 	} else if splited[0] == "GET" {
@@ -209,8 +205,8 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	if err != nil {
 		return
 	}
-	fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-	fmt.Println(string(buffer[:readLeng]))
+	//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+	//fmt.Println(string(buffer[:readLeng]))
 	if readLeng > 0 {
 		_, err := proxy_to_server.Write(buffer[:readLeng])
 		if err != nil {
@@ -226,8 +222,8 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
 			if err != nil {

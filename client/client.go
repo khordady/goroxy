@@ -16,8 +16,7 @@ type strClientConfig struct {
 	ListenEncryption     string
 	ListenEncryptionKey  string
 	ListenAuthentication bool
-	ListenUserName       string
-	ListenPassword       string
+	ListenUsers          []strUser
 	Server               string
 	ServerPort           string
 	SendEncryption       string
@@ -25,6 +24,11 @@ type strClientConfig struct {
 	SendAuthentication   bool
 	SendUserName         string
 	SendPassword         string
+}
+
+type strUser struct {
+	ListenUserName string
+	ListenPassword string
 }
 
 var jjConfig strClientConfig
@@ -80,7 +84,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUserName, jjConfig.ListenPassword,
+	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if request == "" {
 		return
@@ -93,14 +97,8 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	switch jjConfig.SendEncryption {
-	//case "Base64":
-	//	message = encodeBase64(message)
-	//	break
-
-	case "AES":
+	if jjConfig.SendEncryption == "AES" {
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
-		break
 	}
 
 	client_to_server, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
