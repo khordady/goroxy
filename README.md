@@ -27,8 +27,7 @@ follow <a href="https://golangdocs.com/install-go-linux">this link</a> for insta
 
 <h3>#Tips</h3>
 1)Always use AES with 32 char</br>
-1)Always use Strong User/Pass</br>
-2)use port 443 on vps(server) for anonymousity(or something like that :)</br>
+2)Always use Strong User/Pass</br>
 3)don't use for any bad ...hub or you will burn in hell :|</br>
 
 sample config file(Case sensitive!):</br>
