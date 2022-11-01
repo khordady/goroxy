@@ -10,7 +10,7 @@ Use tcp connection, so will never be blocked
 Use user/pass for protection
 just doesn't wash your dishes :(
 
-how to use
+<h3>how to use</h3>
 1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
 2) config server and client .json file
 3) run Server on your vps
@@ -18,7 +18,7 @@ how to use
 5) set http/https proxy in your app (like firefox) and coonect to Client
 hope you enjoy :)
 
-how to compile and use on any os
+<h3>how to compile and use on any os</h3>
 1) Download and install golang sdk atleast 1.19
 2) compile each one seperatly
 3) config .json file
@@ -26,7 +26,7 @@ how to compile and use on any os
 hope you enjoy  :)
 follow <a href="https://golangdocs.com/install-go-linux">this link</a> for install golang in linux
 
-#Tips</br>
+<h3>#Tips</h3>
 1)Always use AES with 32 char</br>
 1)Always use Strong User/Pass</br>
 2)use port 443 on vps(server) for anonymousity(or something like that :)</br>
