@@ -8,11 +8,46 @@ Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a>
 AES/ECB encryption for innitial connection
 Use tcp connection, so will never be blocked
 
-how to install on any os
+how to use
+1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
+2) config server and client .json file
+3) run Server on your vps
+4) run Client in your local pc
+5) set http/https proxy in your app (like firefox) and coonect to Client
+hope you enjoy :)
+
+how to compile and use on any os
 1) Download and install golang sdk atleast 1.19
 2) compile each one seperatly
 3) config .json file
-4) and then run :)
-hope you enjoy
+4) and then run
+hope you enjoy  :)
+follow <a href="https://golangdocs.com/install-go-linux">this link</a> for install golang in linux
 
-follow <a href="https://golangdocs.com/install-go-linux">this link</a> for linux
+sample config file(Case sensitive!):
+
+{
+<--this part is for chain proxy
+  "ListenPort": "8000",
+  "ListenEncryption": "None", //or AES
+  "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32
+  "ListenAuthentication": false,
+  "ListenUsers": [
+    {
+      "ListenUserName": "Goroxy",
+      "ListenPassword": "Goroxy"
+    },
+    {
+      "ListenUserName": "Goroxy2",
+      "ListenPassword": "Goroxy2"
+    }
+  ],
+  -->
+  "Server": "192.168.1.101",
+  "ServerPort": "8181",
+  "SendEncryption": "AES",  //or None
+  "SendEncryptionKey": "SOMETHING 16 bit", //or 24 or 32
+  "SendAuthentication": true,
+  "SendUserName": "Goroxy",
+  "SendPassword": "Goroxy"
+}
