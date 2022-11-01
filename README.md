@@ -10,19 +10,19 @@ Use tcp connection, so will never be blocked</br>
 Use user/pass for protection</br>
 
 <h3>how to use</h3>
-1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
-2) config server and client .json file
-3) run Server on your vps
-4) run Client in your local pc
-5) set http/https proxy in your app (like firefox) and coonect to Client
-hope you enjoy :)
+1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a></br>
+2) config server and client .json file</br>
+3) run Server on your vps</br>
+4) run Client in your local pc</br>
+5) set http/https proxy in your app (like firefox) and coonect to Client</br>
+hope you enjoy :)</br>
 
 <h3>how to compile and use on any os</h3>
-1) Download and install golang sdk atleast 1.19
-2) compile each one seperatly
-3) config .json file
-4) and then run
-hope you enjoy  :)
+1) Download and install golang sdk atleast 1.19</br>
+2) compile each one seperatly</br>
+3) config .json file</br>
+4) and then run</br>
+hope you enjoy  :)</br>
 follow <a href="https://golangdocs.com/install-go-linux">this link</a> for install golang in linux
 
 <h3>#Tips</h3>
