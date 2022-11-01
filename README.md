@@ -8,7 +8,6 @@ Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a>
 AES/ECB encryption for innitial connection</br>
 Use tcp connection, so will never be blocked</br>
 Use user/pass for protection</br>
-just doesn't wash your dishes :(</br>
 
 <h3>how to use</h3>
 1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
