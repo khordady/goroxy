@@ -38,10 +38,11 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, len(buffer), crypto_key)
+		buffer = decryptAES(buffer, length, crypto_key)
 	}
 
 	message := string(buffer)
+	//fmt.Println(message)
 
 	if !strings.Contains(message, "\r\n") {
 		fmt.Println("Wrong UserPass")
