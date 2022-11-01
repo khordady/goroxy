@@ -26,15 +26,15 @@ how to compile and use on any os
 hope you enjoy  :)
 follow <a href="https://golangdocs.com/install-go-linux">this link</a> for install golang in linux
 
-#Tips
-1)Always use AES with 32 char
-1)Always use Strong User/Pass
-2)use port 443 on vps(server) for anonymousity(or something like that :)
-3)don't use for any bad ...hub or you will burn in hell :|
+#Tips</br>
+1)Always use AES with 32 char</br>
+1)Always use Strong User/Pass</br>
+2)use port 443 on vps(server) for anonymousity(or something like that :)</br>
+3)don't use for any bad ...hub or you will burn in hell :|</br>
 
-sample config file(Case sensitive!):
+sample config file(Case sensitive!):</br>
 
-{
+{</br>
 <--this part is for chain proxy</br>
   "ListenPort": "8000",</br>
   "ListenEncryption": "None", //or AES</br>
