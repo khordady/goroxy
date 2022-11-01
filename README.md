@@ -35,27 +35,27 @@ follow <a href="https://golangdocs.com/install-go-linux">this link</a> for insta
 sample config file(Case sensitive!):
 
 {
-<--this part is for chain proxy
-  "ListenPort": "8000",
-  "ListenEncryption": "None", //or AES
-  "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32 en character
-  "ListenAuthentication": false,
-  "ListenUsers": [
-    {
-      "ListenUserName": "Goroxy",
-      "ListenPassword": "Goroxy"
-    },
-    {
-      "ListenUserName": "Goroxy2",
-      "ListenPassword": "Goroxy2"
-    }
-  ],
-  -->
-  "Server": "192.168.1.101",
-  "ServerPort": "8181",
-  "SendEncryption": "AES",  //or None
-  "SendEncryptionKey": "SOMETHING 16 bit", //or 24 or 32
-  "SendAuthentication": true,
-  "SendUserName": "Goroxy",
-  "SendPassword": "Goroxy"
-}
+<--this part is for chain proxy</br>
+  "ListenPort": "8000",</br>
+  "ListenEncryption": "None", //or AES</br>
+  "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32 en character</br>
+  "ListenAuthentication": false,</br>
+  "ListenUsers": [</br>
+    {</br>
+      "ListenUserName": "Goroxy",</br>
+      "ListenPassword": "Goroxy"</br>
+    },</br>
+    {</br>
+      "ListenUserName": "Goroxy2",</br>
+      "ListenPassword": "Goroxy2"</br>
+    }</br>
+  ],</br>
+  --></br>
+  "Server": "192.168.1.101",</br>
+  "ServerPort": "8181",</br>
+  "SendEncryption": "AES",  //or None</br>
+  "SendEncryptionKey": "SOMETHING 16 bit", //or 24 or 32</br>
+  "SendAuthentication": true,</br>
+  "SendUserName": "Goroxy",</br>
+  "SendPassword": "Goroxy"</br>
+}</br>
