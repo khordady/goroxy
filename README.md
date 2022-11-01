@@ -1,14 +1,14 @@
 # Goroxy
 Simple proxy with golang. No root, port forwarding, other dependency or library needed, just pure golang.
 
-Support http 1.1 
-Support chain proxy(use 'client' on not-final servers)
-Cross platform(Windows, Linux, MacOS, Android)
-Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a>
-AES/ECB encryption for innitial connection
-Use tcp connection, so will never be blocked
-Use user/pass for protection
-just doesn't wash your dishes :(
+Support http 1.1 </br>
+Support chain proxy(use 'client' on not-final servers)</br>
+Cross platform(Windows, Linux, MacOS, Android)</br>
+Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a></br>
+AES/ECB encryption for innitial connection</br>
+Use tcp connection, so will never be blocked</br>
+Use user/pass for protection</br>
+just doesn't wash your dishes :(</br>
 
 <h3>how to use</h3>
 1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
