@@ -12,7 +12,7 @@ Use user/pass for protection</br>
 <h3>how to use</h3>
 1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a></br>
 2) config server and client .json file</br>
-3) run Server on your vps</br>
+3) run Server on your vps(to run a file in background use 'nohup ./server &')</br>
 4) run Client in your local pc</br>
 5) set http/https proxy in your app (like firefox) and coonect to Client</br>
 hope you enjoy :)</br>
