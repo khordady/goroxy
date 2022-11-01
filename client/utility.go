@@ -13,7 +13,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	key_length := len(key)
 	lenn := length % key_length
 	if lenn > 0 {
-		length = length + lenn
+		length = length + (key_length - lenn)
 	}
 	var err error
 	if cc == nil {
@@ -23,7 +23,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 			return nil
 		}
 	}
-	msgByte := make([]byte, length+key_length)
+	msgByte := make([]byte, length)
 
 	for i, j := 0, key_length; i < length-lenn; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], buffer[i:j])
@@ -60,7 +60,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, len(buffer), crypto_key)
+		buffer = decryptAES(buffer, length, crypto_key)
 	}
 
 	message := string(buffer)
