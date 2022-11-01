@@ -1,12 +1,14 @@
 # Goroxy
 Simple proxy with golang. No root, port forwarding, other dependency or library needed, just pure golang.
 
-Support http 1.1
+Support http 1.1 
 Support chain proxy(use 'client' on not-final servers)
 Cross platform(Windows, Linux, MacOS, Android)
 Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a>
 AES/ECB encryption for innitial connection
 Use tcp connection, so will never be blocked
+Use user/pass for protection
+just doesn't wash your dishes :(
 
 how to use
 1) Download <a href="https://github.com/khordady/goroxy/releases">Relaese files</a>
@@ -24,13 +26,19 @@ how to compile and use on any os
 hope you enjoy  :)
 follow <a href="https://golangdocs.com/install-go-linux">this link</a> for install golang in linux
 
+#Tips
+1)Always use AES with 32 char
+1)Always use Strong User/Pass
+2)use port 443 on vps(server) for anonymousity(or something like that :)
+3)don't use for any bad ...hub or you will burn in hell :|
+
 sample config file(Case sensitive!):
 
 {
 <--this part is for chain proxy
   "ListenPort": "8000",
   "ListenEncryption": "None", //or AES
-  "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32
+  "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32 en character
   "ListenAuthentication": false,
   "ListenUsers": [
     {
