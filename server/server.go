@@ -169,7 +169,7 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 }
 
 func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
-	buffer := make([]byte, 32*1024)
+	buffer := make([]byte, 1024*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
 		if err != nil {
@@ -191,7 +191,7 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	go write443(client_to_proxy, proxy_to_server)
 
-	buffer := make([]byte, 32*1024)
+	buffer := make([]byte, 1024*1024)
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
 		if err != nil {
