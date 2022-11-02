@@ -14,7 +14,7 @@
   "ServerPort": "8181",
   "SendEncryption": "AES",
   "SendEncryptionKey": "SOMETHING 16 bit",
-  "SendAuthentication": false,
+  "SendAuthentication": true,
   "SendUserName": "Goroxy",
   "SendPassword": "Goroxy"
 }
