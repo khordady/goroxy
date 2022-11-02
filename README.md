@@ -1,5 +1,5 @@
 # Goroxy
-Simple proxy with golang. No root, port forwarding, other dependency or library needed, just pure golang.
+Simple HTTP/HTTPS proxy with golang. No root, port forwarding, other dependency or library needed, just pure golang.
 
 Support http 1.1 </br>
 Support chain proxy(use 'client' on not-final servers)</br>
@@ -33,8 +33,8 @@ follow <a href="https://golangdocs.com/install-go-linux">this link</a> for insta
 sample config file(Case sensitive!):</br>
 
 {</br>
-<--this part is for chain proxy</br>
   "ListenPort": "8000",</br>
+<--this part is for chain proxy</br>
   "ListenEncryption": "None", //or AES</br>
   "ListenEncryptionKey": "SOMETHING 16 bit", //or 24 or 32 en character</br>
   "ListenAuthentication": false,</br>
@@ -48,7 +48,7 @@ sample config file(Case sensitive!):</br>
       "ListenPassword": "Goroxy2"</br>
     }</br>
   ],</br>
-  --></br>
+  until here--></br>
   "Server": "192.168.1.101",</br>
   "ServerPort": "8181",</br>
   "SendEncryption": "AES",  //or None</br>
