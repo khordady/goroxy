@@ -12,6 +12,7 @@ import (
 )
 
 type strClientConfig struct {
+	PrintLog             bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -90,12 +91,20 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
+	if jjConfig.PrintLog {
+		fmt.Println("Request is: " + request)
+	}
+
 	var message []byte
 
 	if jjConfig.SendAuthentication {
 		message = []byte(jjConfig.SendUserName + "," + jjConfig.SendPassword + "\r\n")
 	}
 	message = append(message, []byte(request)...)
+
+	if jjConfig.PrintLog {
+		fmt.Println("Message is: " + request)
+	}
 
 	if jjConfig.SendEncryption == "AES" {
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)

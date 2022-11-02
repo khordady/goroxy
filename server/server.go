@@ -12,6 +12,7 @@ import (
 )
 
 type strServerConfig struct {
+	PrintLog             bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -81,6 +82,10 @@ func handleSocket(client_to_proxy net.Conn) {
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if message == "" {
 		return
+	}
+
+	if jjConfig.PrintLog {
+		fmt.Println(message)
 	}
 
 	splited := strings.Split(message, " ")
