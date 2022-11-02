@@ -91,9 +91,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	if jjConfig.PrintLog {
-		fmt.Println("Request is: " + request)
-	}
+	//if jjConfig.PrintLog {
+	//	fmt.Println("Request is: " + request)
+	//}
 
 	var message []byte
 
@@ -102,9 +102,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	if jjConfig.PrintLog {
-		fmt.Println("Message is: " + request)
-	}
+	//if jjConfig.PrintLog {
+	//	fmt.Println("Message is: " + request)
+	//}
 
 	if jjConfig.SendEncryption == "AES" {
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
@@ -126,6 +126,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 }
 
 func write(client_to_server net.Conn, browser_to_client net.Conn) {
+	defer client_to_server.Close()
 	buffer := make([]byte, 1024*1024)
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
@@ -147,6 +148,7 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 }
 
 func read(client_to_server net.Conn, browser_to_client net.Conn) {
+	defer browser_to_client.Close()
 	buffer := make([]byte, 1024*1024)
 
 	readLeng, err := client_to_server.Read(buffer)

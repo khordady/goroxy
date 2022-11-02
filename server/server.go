@@ -84,9 +84,9 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	if jjConfig.PrintLog {
-		fmt.Println("Message is: " + message)
-	}
+	//if jjConfig.PrintLog {
+	//	fmt.Println("Message is: " + message)
+	//}
 
 	splited := strings.Split(message, " ")
 	if splited[0] == "CONNECT" {
@@ -169,6 +169,7 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 }
 
 func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
+	defer proxy_to_server.Close()
 	buffer := make([]byte, 1024*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
@@ -189,6 +190,7 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 }
 
 func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
+	defer client_to_proxy.Close()
 	go write443(client_to_proxy, proxy_to_server)
 
 	buffer := make([]byte, 1024*1024)
