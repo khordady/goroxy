@@ -126,7 +126,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 }
 
 func write(client_to_server net.Conn, browser_to_client net.Conn) {
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
 		if err != nil {
@@ -147,7 +147,7 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 }
 
 func read(client_to_server net.Conn, browser_to_client net.Conn) {
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 
 	readLeng, err := client_to_server.Read(buffer)
 	if err != nil {
