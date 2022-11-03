@@ -95,7 +95,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println("ERROR3 ", e)
 			return
 		}
-		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
+		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
@@ -129,7 +129,7 @@ func handleSocket(client_to_proxy net.Conn) {
 func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	go read80(client_to_proxy, proxy_to_server)
 
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
 		if err != nil {
@@ -149,7 +149,7 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 }
 
 func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
@@ -170,7 +170,7 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 
 func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer proxy_to_server.Close()
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
 		if err != nil {
@@ -193,7 +193,7 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer client_to_proxy.Close()
 	go write443(client_to_proxy, proxy_to_server)
 
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
 		if err != nil {

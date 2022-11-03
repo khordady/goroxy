@@ -127,7 +127,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 func write(client_to_server net.Conn, browser_to_client net.Conn) {
 	defer client_to_server.Close()
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
 		if err != nil {
@@ -135,8 +135,8 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 			return
 		}
 		if readLeng > 0 {
-			//fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client:")
-			//fmt.Println(string(buffer[:readLeng]))
+			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client:")
+			fmt.Println(string(buffer[:readLeng]))
 
 			_, err := client_to_server.Write(buffer[:readLeng])
 			if err != nil {
@@ -149,17 +149,18 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 
 func read(client_to_server net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
-	buffer := make([]byte, 1024*1024)
+	buffer := make([]byte, 32*1024)
 
-	readLeng, err := client_to_server.Read(buffer)
+	message, err := bufio.NewReader(client_to_server).ReadString('\n')
+
 	if err != nil {
 		return
 	}
-	if readLeng > 0 {
-		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		//fmt.Println(string(buffer[:readLeng]))
+	if len(message) > 0 {
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		fmt.Println(message)
 
-		_, err := browser_to_client.Write(buffer[:readLeng])
+		_, err := browser_to_client.Write([]byte(message + "\r\n"))
 		if err != nil {
 			fmt.Println("ERR7 ", err)
 			return
@@ -173,8 +174,8 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		if err != nil {
 			return
 		}
-		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		//fmt.Println(string(buffer[:readLeng]))
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
+		fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := browser_to_client.Write(buffer[:readLeng])
 			if err != nil {
