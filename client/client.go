@@ -139,7 +139,7 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client: " + strconv.Itoa(readLeng))
 			//fmt.Println(string(buffer[:readLeng]))
 
-			_, err := client_to_server.Write(buffer[:readLeng])
+			_, err = client_to_server.Write(buffer[:readLeng])
 			if err != nil {
 				fmt.Println("ERR6 ", err)
 				return
@@ -161,7 +161,7 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(len(message)))
 		//fmt.Println(message)
 
-		_, err := browser_to_client.Write([]byte(message + "\r\n"))
+		_, err = browser_to_client.Write([]byte(message + "\r\n"))
 		if err != nil {
 			fmt.Println("ERR7 ", err)
 			return
@@ -176,9 +176,9 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 			return
 		}
 		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
-			_, err := browser_to_client.Write(buffer[:readLeng])
+			_, err = browser_to_client.Write(buffer[:readLeng])
 			if err != nil {
 				fmt.Println("ERR8 ", err)
 				return

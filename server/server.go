@@ -96,6 +96,9 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println("ERROR3 ", e)
 			return
 		}
+
+		fmt.Println("CONNECTed TO: " + splited[1])
+
 		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
