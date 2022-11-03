@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -135,8 +136,8 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 			return
 		}
 		if readLeng > 0 {
-			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client:")
-			fmt.Println(string(buffer[:readLeng]))
+			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client: " + strconv.Itoa(readLeng))
+			//fmt.Println(string(buffer[:readLeng]))
 
 			_, err := client_to_server.Write(buffer[:readLeng])
 			if err != nil {
@@ -157,8 +158,8 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		return
 	}
 	if len(message) > 0 {
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		fmt.Println(message)
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(len(message)))
+		//fmt.Println(message)
 
 		_, err := browser_to_client.Write([]byte(message + "\r\n"))
 		if err != nil {
