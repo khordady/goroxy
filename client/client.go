@@ -92,9 +92,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	//if jjConfig.PrintLog {
-	//	fmt.Println("Request is: " + request)
-	//}
+	if jjConfig.PrintLog {
+		fmt.Println("Request is: " + request)
+	}
 
 	var message []byte
 
@@ -103,9 +103,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	//if jjConfig.PrintLog {
-	//	fmt.Println("Message is: " + request)
-	//}
+	if jjConfig.PrintLog {
+		fmt.Println("Message is: " + request)
+	}
 
 	if jjConfig.SendEncryption == "AES" {
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
@@ -137,7 +137,7 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 		}
 		if readLeng > 0 {
 			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client: " + strconv.Itoa(readLeng))
-			//fmt.Println(string(buffer[:readLeng]))
+			fmt.Println(string(buffer[:readLeng]))
 
 			_, err = client_to_server.Write(buffer[:readLeng])
 			if err != nil {
@@ -152,16 +152,16 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 	buffer := make([]byte, 32*1024)
 
-	message, err := bufio.NewReader(client_to_server).ReadString('\n')
+	length, err := bufio.NewReader(client_to_server).Read(buffer)
 
 	if err != nil {
 		return
 	}
-	if len(message) > 0 {
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(len(message)))
-		//fmt.Println(message)
+	if length > 0 {
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(length))
+		fmt.Println(string(buffer[:length]))
 
-		_, err = browser_to_client.Write([]byte(message + "\r\n"))
+		_, err = browser_to_client.Write(buffer[:length])
 		if err != nil {
 			fmt.Println("ERR7 ", err)
 			return
@@ -171,14 +171,14 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 	go write(client_to_server, browser_to_client)
 
 	for {
-		readLeng, err := client_to_server.Read(buffer)
+		length, err = bufio.NewReader(client_to_server).Read(buffer)
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:")
-		//fmt.Println(string(buffer[:readLeng]))
-		if readLeng > 0 {
-			_, err = browser_to_client.Write(buffer[:readLeng])
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(length))
+		fmt.Println(string(buffer[:length]))
+		if length > 0 {
+			_, err = browser_to_client.Write(buffer[:length])
 			if err != nil {
 				fmt.Println("ERR8 ", err)
 				return

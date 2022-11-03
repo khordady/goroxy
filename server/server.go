@@ -85,9 +85,14 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	//if jjConfig.PrintLog {
-	//	fmt.Println("Message is: " + message)
-	//}
+	var host []string
+	headers := strings.Split(message, "\r\n")
+	for _, header := range headers {
+		if strings.HasPrefix(header, "Host") {
+			host = strings.Split(strings.Replace(header, " ", "", 1), ":")
+			break
+		}
+	}
 
 	splited := strings.Split(message, " ")
 	if splited[0] == "CONNECT" {
@@ -107,15 +112,7 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		read443(client_to_proxy, proxy_to_server)
 	} else if splited[0] == "GET" {
-		host1 := strings.Replace(splited[1], "http://", "", 1)
-		host2 := host1[:len(host1)-1]
-		var final_host string
-		if strings.LastIndexAny(host2, "/") > 0 {
-			final_host = host2[:strings.LastIndexAny(host2, "/")]
-		} else {
-			final_host = host2
-		}
-		proxy_to_server, e := net.Dial("tcp", final_host+":80")
+		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
 		if e != nil {
 			fmt.Println("ERROR5 ", e)
 			return
