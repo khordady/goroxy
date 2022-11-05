@@ -72,7 +72,7 @@ func main() {
 }
 
 func handleSocket(client_to_proxy net.Conn) {
-	buffer := make([]byte, 8*1024)
+	buffer := make([]byte, 9*1024)
 	length, e := client_to_proxy.Read(buffer)
 	if e != nil {
 		fmt.Println("ERR1 ", e)
@@ -89,29 +89,29 @@ func handleSocket(client_to_proxy net.Conn) {
 	headers := strings.Split(message, "\r\n")
 	for _, header := range headers {
 		if strings.HasPrefix(header, "Host") {
-			host = strings.Split(strings.Replace(header, " ", "", 1), ":")
+			host = strings.Split(header, " ")
+			fmt.Println("HOST ISSSSSSSS:" + host[1])
 			break
 		}
 	}
 
-	splited := strings.Split(message, " ")
-	if splited[0] == "CONNECT" {
-		proxy_to_server, e := net.Dial("tcp", splited[1])
+	if strings.HasSuffix(host[1], "443") {
+		proxy_to_server, e := net.Dial("tcp", host[1])
 		if e != nil {
 			fmt.Println("ERROR3 ", e)
 			return
 		}
 
-		fmt.Println("CONNECTed TO: " + splited[1])
+		fmt.Println("CONNECTED TO: " + host[1])
 
-		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
+		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
 		}
 
 		read443(client_to_proxy, proxy_to_server)
-	} else if splited[0] == "GET" {
+	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
 		if e != nil {
 			fmt.Println("ERROR5 ", e)

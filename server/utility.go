@@ -42,6 +42,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 	}
 
 	message := string(buffer)
+	message = message[:strings.LastIndex(message, "\r\n\r\n")+4]
 	//fmt.Println(message)
 
 	if !strings.Contains(message, "\r\n") {
