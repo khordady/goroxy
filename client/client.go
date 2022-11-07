@@ -124,22 +124,22 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 func write(client_to_server net.Conn, browser_to_client net.Conn) {
 	defer client_to_server.Close()
-	buffer := make([]byte, 32*1024)
+	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
-		if err != nil {
-			fmt.Println("ERR5 ", err)
-			return
-		}
 		if readLeng > 0 {
 			fmt.Println("WRRRRRRRRRRRRRRRRRRRRRRRRIIIIIIIT from client: " + strconv.Itoa(readLeng))
-			fmt.Println(string(buffer[:readLeng]))
+			//fmt.Println(string(buffer[:readLeng]))
 
-			_, err = client_to_server.Write(buffer[:readLeng])
+			_, err := client_to_server.Write(buffer[:readLeng])
 			if err != nil {
 				fmt.Println("ERR6 ", err)
 				return
 			}
+		}
+		if err != nil {
+			fmt.Println("ERR5 ", err)
+			return
 		}
 	}
 }
@@ -149,14 +149,11 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 
 	buffer, err := bufio.NewReader(client_to_server).ReadBytes('\n')
 
-	if err != nil {
-		return
-	}
 	if len(buffer) > 0 {
 		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(len(buffer)))
-		fmt.Println(string(buffer))
+		//fmt.Println(string(buffer))
 
-		_, err = browser_to_client.Write(buffer)
+		_, err := browser_to_client.Write(buffer)
 		if err != nil {
 			fmt.Println("ERR7 ", err)
 			return
@@ -167,24 +164,27 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 			return
 		}
 	}
+	if err != nil {
+		return
+	}
 
 	go write(client_to_server, browser_to_client)
 
-	buffer = make([]byte, 32*1024)
+	buffer = make([]byte, 1024)
 
 	for {
 		length, err := bufio.NewReader(client_to_server).Read(buffer)
-		if err != nil {
-			return
-		}
 		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(length))
-		fmt.Println(string(buffer[:length]))
+		//fmt.Println(string(buffer[:length]))
 		if length > 0 {
-			_, err = browser_to_client.Write(buffer[:length])
+			_, err := browser_to_client.Write(buffer[:length])
 			if err != nil {
 				fmt.Println("ERR8 ", err)
 				return
 			}
+		}
+		if err != nil {
+			return
 		}
 	}
 }
