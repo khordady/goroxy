@@ -122,16 +122,16 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	read(client_to_server, browser_to_client)
 }
 
-func write(client_to_server net.Conn, browser_to_client net.Conn) {
-	defer client_to_server.Close()
+func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
+	defer client_to_proxy.Close()
 	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
 		if readLeng > 0 {
-			fmt.Println("from client to proxy: " + strconv.Itoa(readLeng))
+			fmt.Println("from client to browser: " + strconv.Itoa(readLeng))
 			//fmt.Println(string(buffer[:readLeng]))
 
-			_, err := client_to_server.Write(buffer[:readLeng])
+			_, err := client_to_proxy.Write(buffer[:readLeng])
 			if err != nil {
 				fmt.Println("ERR6 ", err)
 				return
@@ -144,10 +144,10 @@ func write(client_to_server net.Conn, browser_to_client net.Conn) {
 	}
 }
 
-func read(client_to_server net.Conn, browser_to_client net.Conn) {
+func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 
-	buffer, err := bufio.NewReader(client_to_server).ReadBytes('\n')
+	buffer, err := bufio.NewReader(client_to_proxy).ReadBytes('\n')
 
 	if len(buffer) > 0 {
 		fmt.Println("from proxy to client: " + strconv.Itoa(len(buffer)))
@@ -168,12 +168,12 @@ func read(client_to_server net.Conn, browser_to_client net.Conn) {
 		return
 	}
 
-	go write(client_to_server, browser_to_client)
+	go write(client_to_proxy, browser_to_client)
 
 	buffer = make([]byte, 1024)
 
 	for {
-		length, err := bufio.NewReader(client_to_server).Read(buffer)
+		length, err := bufio.NewReader(client_to_proxy).Read(buffer)
 		fmt.Println("from proxy to client: " + strconv.Itoa(length))
 		//fmt.Println(string(buffer[:length]))
 		if length > 0 {
