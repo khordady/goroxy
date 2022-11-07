@@ -131,14 +131,14 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer proxy_to_server.Close()
 	go read80(client_to_proxy, proxy_to_server)
 
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 8*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
-		fmt.Println("READ from server to proxy80:" + strconv.Itoa(readLeng))
+		fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy80:" + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			writeLength, err := client_to_proxy.Write(buffer[:readLeng])
-			fmt.Println("WRITE from server to proxy80:" + strconv.Itoa(writeLength))
+			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from server to proxy80:" + strconv.Itoa(writeLength))
 			if err != nil {
 				fmt.Println("ERR4 ", err)
 				return
@@ -153,15 +153,15 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 
 func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer client_to_proxy.Close()
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 8*1024)
 
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
-		fmt.Println("READ from proxy to client 80:" + strconv.Itoa(readLeng))
+		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client 80:" + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			writeLength, err := proxy_to_server.Write(buffer[:readLeng])
-			fmt.Println("WRITE from server to proxy80:" + strconv.Itoa(writeLength))
+			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from server to proxy80:" + strconv.Itoa(writeLength))
 			if err != nil {
 				fmt.Println("ERR5 ", err)
 				return
@@ -175,7 +175,7 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 
 func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer proxy_to_server.Close()
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 8*1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
 		fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy443: " + strconv.Itoa(readLeng))
@@ -199,7 +199,7 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer client_to_proxy.Close()
 	go write443(client_to_proxy, proxy_to_server)
 
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 8*1024)
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
 		fmt.Println(time.Now().Format(time.Stamp) + " READ from client to proxy443: " + strconv.Itoa(readLeng))
