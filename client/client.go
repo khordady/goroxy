@@ -92,6 +92,8 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
+	fmt.Println(request)
+
 	var message []byte
 
 	if jjConfig.SendAuthentication {
@@ -128,10 +130,13 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	for {
 		readLeng, err := browser_to_client.Read(buffer)
 		if readLeng > 0 {
-			fmt.Println("from client to browser: " + strconv.Itoa(readLeng))
+			fmt.Println("READ from client to browser: " + strconv.Itoa(readLeng))
 			//fmt.Println(string(buffer[:readLeng]))
 
-			_, err := client_to_proxy.Write(buffer[:readLeng])
+			writeLength, err := client_to_proxy.Write(buffer[:readLeng])
+			if readLeng > 0 {
+				fmt.Println("WRITE from client to browser: " + strconv.Itoa(writeLength))
+			}
 			if err != nil {
 				fmt.Println("ERR6 ", err)
 				return
@@ -151,11 +156,13 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	length, err := bufio.NewReader(client_to_proxy).Read(buffer)
 
 	if length > 0 {
-		fmt.Println("from proxy to client: " + strconv.Itoa(length))
-		a := string(buffer[:length])
-		fmt.Println(strings.Replace(a, "\r", "", 100))
+		fmt.Println("READ from proxy to client: " + strconv.Itoa(length))
+		//fmt.Println(string(buffer))
 
-		_, err := browser_to_client.Write(buffer)
+		writeLength, err := browser_to_client.Write(buffer)
+		if writeLength > 0 {
+			fmt.Println("WRITE from client to browser: " + strconv.Itoa(writeLength))
+		}
 		if err != nil {
 			fmt.Println("ERR7 ", err)
 			return
@@ -168,10 +175,9 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	go write(client_to_proxy, browser_to_client)
 
 	for {
-		length, err = bufio.NewReader(client_to_proxy).Read(buffer)
+		length, err := bufio.NewReader(client_to_proxy).Read(buffer)
 		fmt.Println("from proxy to client: " + strconv.Itoa(length))
-		a := string(buffer[:length])
-		fmt.Println(strings.Replace(a, "\r", "", 100))
+		//fmt.Println(string(buffer[:length]))
 		if length > 0 {
 			_, err := browser_to_client.Write(buffer[:length])
 			if err != nil {
