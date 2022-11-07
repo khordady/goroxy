@@ -92,7 +92,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	fmt.Println(request)
+	//fmt.Println(request)
 
 	var message []byte
 
