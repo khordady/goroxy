@@ -182,7 +182,7 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			writeLength, err := client_to_proxy.Write(buffer[:readLeng])
-			fmt.Println("WRITE from server to proxy443: " + strconv.Itoa(writeLength))
+			fmt.Println("WRITE from proxy to client443: " + strconv.Itoa(writeLength))
 			if err != nil {
 				fmt.Println("ERR11 ", err)
 				return
@@ -202,11 +202,11 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
-		fmt.Println("from proxy to client443: " + strconv.Itoa(readLeng))
+		fmt.Println("READ from client to proxy443: " + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			writeLength, err := proxy_to_server.Write(buffer[:readLeng])
-			fmt.Println("WRITE from server to proxy443: " + strconv.Itoa(writeLength))
+			fmt.Println("WRITE from proxy to server443: " + strconv.Itoa(writeLength))
 			if err != nil {
 				fmt.Println("ERR5 ", err)
 				return
