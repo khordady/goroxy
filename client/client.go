@@ -146,11 +146,12 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
+	buffer := make([]byte, 1024)
 
-	buffer, err := bufio.NewReader(client_to_proxy).ReadBytes('\n')
+	length, err := bufio.NewReader(client_to_proxy).Read(buffer)
 
-	if len(buffer) > 0 {
-		fmt.Println("from proxy to client: " + strconv.Itoa(len(buffer)))
+	if length > 0 {
+		fmt.Println("from proxy to client: " + strconv.Itoa(length))
 		//fmt.Println(string(buffer))
 
 		_, err := browser_to_client.Write(buffer)
@@ -169,8 +170,6 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	}
 
 	go write(client_to_proxy, browser_to_client)
-
-	buffer = make([]byte, 1024)
 
 	for {
 		length, err := bufio.NewReader(client_to_proxy).Read(buffer)
