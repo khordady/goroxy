@@ -7,13 +7,11 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
 type strServerConfig struct {
-	PrintLog             bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -90,7 +88,7 @@ func handleSocket(client_to_proxy net.Conn) {
 	for _, header := range headers {
 		if strings.HasPrefix(header, "Host") {
 			host = strings.Split(header, " ")
-			fmt.Println("HOST ISSSSSSSS:" + host[1])
+			//fmt.Println("HOST ISSSSSSSS:" + host[1])
 			break
 		}
 	}
@@ -102,9 +100,9 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		fmt.Println("CONNECTED TO: " + host[1])
+		//fmt.Println("CONNECTED TO: " + host[1])
 
-		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
@@ -137,8 +135,8 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 			fmt.Println("ERROR8 ", err)
 			return
 		}
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:" + strconv.Itoa(readLeng))
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:" + strconv.Itoa(readLeng))
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
 			if err != nil {
@@ -157,8 +155,8 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:" + strconv.Itoa(readLeng))
-		fmt.Println(string(buffer[:readLeng]))
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:" + strconv.Itoa(readLeng))
+		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
 			if err != nil {
@@ -178,7 +176,7 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 			fmt.Println("ERROR10 ", err)
 			return
 		}
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server: " + strconv.Itoa(readLeng))
+		//fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server: " + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err = client_to_proxy.Write(buffer[:readLeng])
@@ -200,7 +198,7 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(readLeng))
+		//fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err = proxy_to_server.Write(buffer[:readLeng])

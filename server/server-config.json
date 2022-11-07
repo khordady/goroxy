@@ -1,5 +1,4 @@
 {
-  "PrintLog": true,
   "ListenPort": "8181",
   "ListenEncryption": "AES",
   "ListenEncryptionKey": "SOMETHING 16 bit",
