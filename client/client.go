@@ -159,7 +159,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 		fmt.Println("READ from proxy to client: " + strconv.Itoa(length))
 		//fmt.Println(string(buffer))
 
-		writeLength, err := browser_to_client.Write(buffer)
+		writeLength, err := browser_to_client.Write(buffer[:length])
 		if writeLength > 0 {
 			fmt.Println("WRITE from client to browser: " + strconv.Itoa(writeLength))
 		}
