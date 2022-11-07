@@ -104,7 +104,7 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		fmt.Println("CONNECTED TO: " + host[1])
 
-		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
@@ -134,7 +134,7 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server:" + strconv.Itoa(readLeng))
+		fmt.Println("from server to proxy80:" + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
@@ -156,7 +156,7 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client:" + strconv.Itoa(readLeng))
+		fmt.Println("from proxy to client 80:" + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
@@ -176,7 +176,7 @@ func write443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
-		fmt.Println("WRIIIIIIIIIIIIIIIIIIIIIIT from server: " + strconv.Itoa(readLeng))
+		fmt.Println("from server to proxy443: " + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
@@ -199,7 +199,7 @@ func read443(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	buffer := make([]byte, 1024)
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
-		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEED from client: " + strconv.Itoa(readLeng))
+		fmt.Println("from proxy to client443: " + strconv.Itoa(readLeng))
 		//fmt.Println(string(buffer[:readLeng]))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
