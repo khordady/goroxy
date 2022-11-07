@@ -135,7 +135,8 @@ func write80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	for {
 		readLeng, err := proxy_to_server.Read(buffer)
 		fmt.Println("from server to proxy80:" + strconv.Itoa(readLeng))
-		//fmt.Println(string(buffer[:readLeng]))
+		a := string(buffer[:readLeng])
+		fmt.Println(strings.Replace(a, "\r", "", 100))
 		if readLeng > 0 {
 			_, err := client_to_proxy.Write(buffer[:readLeng])
 			if err != nil {
@@ -157,7 +158,8 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	for {
 		readLeng, err := client_to_proxy.Read(buffer)
 		fmt.Println("from proxy to client 80:" + strconv.Itoa(readLeng))
-		//fmt.Println(string(buffer[:readLeng]))
+		a := string(buffer[:readLeng])
+		fmt.Println(strings.Replace(a, "\r", "", 100))
 		if readLeng > 0 {
 			_, err := proxy_to_server.Write(buffer[:readLeng])
 			if err != nil {
