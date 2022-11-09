@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -121,79 +121,87 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	read(client_to_server, browser_to_client)
+	//read(client_to_server, browser_to_client)
+	exchange(client_to_server, browser_to_client)
+	go exchange(browser_to_client, client_to_server)
 }
 
-func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
-	defer client_to_proxy.Close()
-	buffer := make([]byte, 8*1024)
-
-	reader := bufio.NewReader(browser_to_client)
-
-	for {
-		length, err := reader.Read(buffer)
-		if length > 0 {
-			fmt.Println(time.Now().Format(time.Stamp) + " READ from client to browser: " + strconv.Itoa(length))
-			//fmt.Println(string(buffer[:readLeng]))
-
-			writeLength, err := client_to_proxy.Write(buffer[:length])
-			if writeLength > 0 {
-				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
-			}
-			if err != nil {
-				fmt.Println("ERR6 ", err)
-				return
-			}
-		}
-		if err != nil {
-			fmt.Println("ERR5 ", err)
-			return
-		}
-	}
+func exchange(src, dest net.Conn) {
+	defer src.Close()
+	defer dest.Close()
+	io.Copy(src, dest)
 }
 
-func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
-	defer browser_to_client.Close()
-	buffer := make([]byte, 8*1024)
-
-	client_to_proxy.SetReadDeadline(time.Now().Add(2 * time.Second))
-	reader := bufio.NewReader(client_to_proxy)
-	length, err := reader.Read(buffer)
-
-	fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
-	fmt.Println(string(buffer))
-
-	if length > 0 {
-		writeLength, err := browser_to_client.Write(buffer[:length])
-		fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
-		if err != nil {
-			fmt.Println("ERR7 ", err)
-			return
-		}
-	}
-	if !os.IsTimeout(err) && err != nil {
-		fmt.Println("ERR71 ", err)
-		return
-	}
-
-	client_to_proxy.SetReadDeadline(time.Time{})
-	go write(client_to_proxy, browser_to_client)
-
-	for {
-		length, err := reader.Read(buffer)
-		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
-		//fmt.Println(string(buffer[:length]))
-		if length > 0 {
-			writeLength, err := browser_to_client.Write(buffer[:length])
-			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
-			if err != nil {
-				fmt.Println("ERR8 ", err)
-				return
-			}
-		}
-		if err != nil {
-			fmt.Println("ERR81 ", err)
-			return
-		}
-	}
-}
+//func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
+//	defer client_to_proxy.Close()
+//	buffer := make([]byte, 8*1024)
+//
+//	reader := bufio.NewReader(browser_to_client)
+//
+//	for {
+//		length, err := reader.Read(buffer)
+//		if length > 0 {
+//			fmt.Println(time.Now().Format(time.Stamp) + " READ from client to browser: " + strconv.Itoa(length))
+//			//fmt.Println(string(buffer[:readLeng]))
+//
+//			writeLength, err := client_to_proxy.Write(buffer[:length])
+//			if writeLength > 0 {
+//				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
+//			}
+//			if err != nil {
+//				fmt.Println("ERR6 ", err)
+//				return
+//			}
+//		}
+//		if err != nil {
+//			fmt.Println("ERR5 ", err)
+//			return
+//		}
+//	}
+//}
+//
+//func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
+//	defer browser_to_client.Close()
+//	buffer := make([]byte, 8*1024)
+//
+//	client_to_proxy.SetReadDeadline(time.Now().Add(2 * time.Second))
+//	reader := bufio.NewReader(client_to_proxy)
+//	length, err := reader.Read(buffer)
+//
+//	fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
+//	fmt.Println(string(buffer))
+//
+//	if length > 0 {
+//		writeLength, err := browser_to_client.Write(buffer[:length])
+//		fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
+//		if err != nil {
+//			fmt.Println("ERR7 ", err)
+//			return
+//		}
+//	}
+//	if !os.IsTimeout(err) && err != nil {
+//		fmt.Println("ERR71 ", err)
+//		return
+//	}
+//
+//	client_to_proxy.SetReadDeadline(time.Time{})
+//	go write(client_to_proxy, browser_to_client)
+//
+//	for {
+//		length, err := reader.Read(buffer)
+//		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
+//		//fmt.Println(string(buffer[:length]))
+//		if length > 0 {
+//			writeLength, err := browser_to_client.Write(buffer[:length])
+//			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
+//			if err != nil {
+//				fmt.Println("ERR8 ", err)
+//				return
+//			}
+//		}
+//		if err != nil {
+//			fmt.Println("ERR81 ", err)
+//			return
+//		}
+//	}
+//}
