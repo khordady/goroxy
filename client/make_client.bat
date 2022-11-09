@@ -1,0 +1,1 @@
+go build -o client.exe .\client.go .\utility.go
