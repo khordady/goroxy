@@ -122,8 +122,8 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	//read(client_to_server, browser_to_client)
-	exchange(client_to_server, browser_to_client)
 	go exchange(browser_to_client, client_to_server)
+	exchange(client_to_server, browser_to_client)
 }
 
 func exchange(src, dest net.Conn) {

@@ -119,8 +119,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		//read443(client_to_proxy, proxy_to_server)
-		exchange(client_to_proxy, proxy_to_server)
 		go exchange(proxy_to_server, client_to_proxy)
+		exchange(client_to_proxy, proxy_to_server)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -136,8 +136,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		//write80(client_to_proxy, proxy_to_server)
-		exchange(client_to_proxy, proxy_to_server)
 		go exchange(proxy_to_server, client_to_proxy)
+		exchange(client_to_proxy, proxy_to_server)
 	}
 }
 
