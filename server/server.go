@@ -85,8 +85,6 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	fmt.Println("MESSAGE IS: " + message)
-
 	var host []string
 	headers := strings.Split(message, "\r\n")
 	for _, header := range headers {
@@ -106,7 +104,8 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		fmt.Println("CONNECTED TO: " + host[1])
 
-		_, e = client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		Writelength, e := client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		fmt.Println("WROTE 200 OK: " + strconv.Itoa(Writelength))
 		if e != nil {
 			fmt.Println("ERROR4 ", e)
 			return
@@ -119,7 +118,8 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println("ERROR5 ", e)
 			return
 		}
-		_, e = proxy_to_server.Write([]byte(message))
+		Writelength, e := proxy_to_server.Write([]byte(message))
+		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 		if e != nil {
 			fmt.Println("ERROR6 ", e)
 			return
