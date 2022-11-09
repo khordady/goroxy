@@ -126,7 +126,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer client_to_proxy.Close()
-	buffer := make([]byte, 8*1024)
+	buffer := make([]byte, 1024)
 
 	reader := bufio.NewReader(browser_to_client)
 
@@ -154,15 +154,15 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
-	buffer := make([]byte, 8*1024)
+	buffer := make([]byte, 1024)
 
 	reader := bufio.NewReader(client_to_proxy)
 	length, err := reader.Read(buffer)
 
-	if length > 0 {
-		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
-		fmt.Println(string(buffer))
+	fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client: " + strconv.Itoa(length))
+	fmt.Println(string(buffer))
 
+	if length > 0 {
 		writeLength, err := browser_to_client.Write(buffer[:length])
 		fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: " + strconv.Itoa(writeLength))
 		if err != nil {
