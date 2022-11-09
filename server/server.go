@@ -85,6 +85,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
+	fmt.Println("MESSAGE IS: " + message)
+
 	var host []string
 	headers := strings.Split(message, "\r\n")
 	for _, header := range headers {
@@ -155,12 +157,14 @@ func read80(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer client_to_proxy.Close()
 	buffer := make([]byte, 8*1024)
 
+	reader := bufio.NewReader(client_to_proxy)
+
 	for {
-		readLeng, err := client_to_proxy.Read(buffer)
-		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client 80:" + strconv.Itoa(readLeng))
+		length, err := reader.Read(buffer)
+		fmt.Println(time.Now().Format(time.Stamp) + " READ from proxy to client 80:" + strconv.Itoa(length))
 		//fmt.Println(string(buffer[:readLeng]))
-		if readLeng > 0 {
-			writeLength, err := proxy_to_server.Write(buffer[:readLeng])
+		if length > 0 {
+			writeLength, err := proxy_to_server.Write(buffer[:length])
 			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from server to proxy80:" + strconv.Itoa(writeLength))
 			if err != nil {
 				fmt.Println("ERR5 ", err)
