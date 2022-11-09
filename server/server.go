@@ -73,9 +73,9 @@ func main() {
 
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
-	length, e := client_to_proxy.Read(buffer)
-	if e != nil {
-		fmt.Println("ERR1 ", e)
+	length, err := bufio.NewReader(client_to_proxy).Read(buffer)
+	if err != nil {
+		fmt.Println("ERR1 ", err)
 		return
 	}
 

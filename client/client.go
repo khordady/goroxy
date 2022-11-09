@@ -79,10 +79,10 @@ func main() {
 }
 
 func handleBrowserToClient(browser_to_client net.Conn) {
-	buffer := make([]byte, 8*1024)
-	length, e := browser_to_client.Read(buffer)
-	if e != nil {
-		fmt.Println("ERR1 ", e)
+	buffer := make([]byte, 9*1024)
+	length, err := bufio.NewReader(browser_to_client).Read(buffer)
+	if err != nil {
+		fmt.Println("ERR1 ", err)
 		return
 	}
 
