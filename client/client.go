@@ -128,9 +128,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 func exchange(src, dest net.Conn) {
 	defer src.Close()
-	_, err := io.Copy(src, dest)
+	written, err := io.Copy(src, dest)
 	if err != nil {
-		fmt.Println("COPY ERROR CLIENT IS: ", err)
+		fmt.Println("COPY ERROR CLIENT IS: ", written, err)
 		return
 	}
 }

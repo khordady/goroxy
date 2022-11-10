@@ -117,8 +117,8 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		go exchange(client_to_proxy, proxy_to_server)
-		exchange(proxy_to_server, client_to_proxy)
+		go exchange(client_to_proxy, proxy_to_server, host[1])
+		exchange(proxy_to_server, client_to_proxy, host[1])
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -133,16 +133,16 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		go exchange(proxy_to_server, client_to_proxy)
-		exchange(client_to_proxy, proxy_to_server)
+		go exchange(proxy_to_server, client_to_proxy, host[1])
+		exchange(client_to_proxy, proxy_to_server, host[1])
 	}
 }
 
-func exchange(src, dest net.Conn) {
+func exchange(src, dest net.Conn, host string) {
 	defer src.Close()
-	_, err := io.Copy(src, dest)
+	written, err := io.Copy(src, dest)
 	if err != nil {
-		fmt.Println("COPY ERROR SERVER IS: ", err)
+		fmt.Println("COPY ERROR SERVER IS "+host+": ", written, err)
 		return
 	}
 }
