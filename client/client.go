@@ -127,8 +127,19 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 }
 
 func exchange(src, dest net.Conn) {
-	defer src.Close()
-	defer dest.Close()
+	fmt.Println("Start SRC: ", src.RemoteAddr())
+	defer func(src net.Conn) {
+		err := src.Close()
+		if err != nil {
+			fmt.Println("ERRCPP1 ", err)
+		}
+	}(src)
+	defer func(dest net.Conn) {
+		err := dest.Close()
+		if err != nil {
+			fmt.Println("ERRCPP2 ", err)
+		}
+	}(dest)
 	written, err := io.Copy(src, dest)
 	if err != nil {
 		fmt.Println("COPY ERROR CLIENT IS: ", written, err)

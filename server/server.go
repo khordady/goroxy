@@ -139,8 +139,18 @@ func handleSocket(client_to_proxy net.Conn) {
 }
 
 func exchange(src, dest net.Conn, host string) {
-	defer src.Close()
-	defer dest.Close()
+	defer func(src net.Conn) {
+		err := src.Close()
+		if err != nil {
+			fmt.Println("ERRCPP2 ", err)
+		}
+	}(src)
+	defer func(dest net.Conn) {
+		err := dest.Close()
+		if err != nil {
+			fmt.Println("ERRCPP1 ", err)
+		}
+	}(dest)
 	written, err := io.Copy(src, dest)
 	if err != nil {
 		fmt.Println("COPY ERROR SERVER IS "+host+": ", written, err)
