@@ -140,6 +140,7 @@ func handleSocket(client_to_proxy net.Conn) {
 
 func exchange(src, dest net.Conn, host string) {
 	defer src.Close()
+	defer dest.Close()
 	written, err := io.Copy(src, dest)
 	if err != nil {
 		fmt.Println("COPY ERROR SERVER IS "+host+": ", written, err)
