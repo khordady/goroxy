@@ -142,7 +142,7 @@ func exchange(src, dest net.Conn) {
 	defer src.Close()
 	_, err := io.Copy(src, dest)
 	if err != nil {
-		fmt.Println("COPY ERROR IS: ", err)
+		fmt.Println("COPY ERROR SERVER IS: ", err)
 		return
 	}
 }
