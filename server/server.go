@@ -108,7 +108,13 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		writer := bufio.NewWriter(client_to_proxy)
 		//Writelength, err := client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
-		Writelength, e := writer.WriteString("HTTP/1.1 200 Connection Established\r\n\r\n")
+		_, e = writer.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
+		if e != nil {
+			fmt.Println("ERROR42 ", e)
+			return
+		}
+		_, e = writer.Write([]byte("\r\n"))
+
 		if e != nil {
 			fmt.Println("ERROR42 ", e)
 			return
@@ -116,11 +122,6 @@ func handleSocket(client_to_proxy net.Conn) {
 		err := writer.Flush()
 		if err != nil {
 			fmt.Println("ERROR42 ", err)
-			return
-		}
-		fmt.Println("WROTE 200 OK: " + strconv.Itoa(Writelength))
-		if e != nil {
-			fmt.Println("ERROR4 ", e)
 			return
 		}
 
