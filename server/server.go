@@ -98,11 +98,11 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 
 	if strings.HasSuffix(host[1], "443") {
-		//proxy_to_server, e := net.Dial("tcp", host[1])
-		//if e != nil {
-		//	fmt.Println("ERROR3 ", e)
-		//	return
-		//}
+		proxy_to_server, e := net.Dial("tcp", host[1])
+		if e != nil {
+			fmt.Println("ERROR3 ", e)
+			return
+		}
 
 		fmt.Println("CONNECTED TO: " + host[1])
 
@@ -122,8 +122,8 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		//go read(client_to_proxy, proxy_to_server)
-		//write(client_to_proxy, proxy_to_server)
+		go read(client_to_proxy, proxy_to_server)
+		write(client_to_proxy, proxy_to_server)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
