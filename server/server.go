@@ -98,36 +98,32 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 
 	if strings.HasSuffix(host[1], "443") {
-		proxy_to_server, e := net.Dial("tcp", host[1])
-		if e != nil {
-			fmt.Println("ERROR3 ", e)
-			return
-		}
+		//proxy_to_server, e := net.Dial("tcp", host[1])
+		//if e != nil {
+		//	fmt.Println("ERROR3 ", e)
+		//	return
+		//}
 
 		fmt.Println("CONNECTED TO: " + host[1])
 
-		writer := bufio.NewWriter(client_to_proxy)
+		length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
+		if err != nil {
+			return
+		}
+		fmt.Println("WROTED 200: ", length)
+		//writer := bufio.NewWriter(client_to_proxy)
 		//Writelength, err := client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
-		_, e = writer.Write([]byte("TEST MESSAGE FROM GITHUB"))
+		//_, e = writer.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		//_, e = writer.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
-		if e != nil {
-			fmt.Println("ERROR42 ", e)
-			return
-		}
 		//_, e = writer.Write([]byte("\r\n"))
-
-		if e != nil {
-			fmt.Println("ERROR42 ", e)
-			return
-		}
-		err := writer.Flush()
+		//err := writer.Flush()
 		if err != nil {
 			fmt.Println("ERROR42 ", err)
 			return
 		}
 
-		go read(client_to_proxy, proxy_to_server)
-		write(client_to_proxy, proxy_to_server)
+		//go read(client_to_proxy, proxy_to_server)
+		//write(client_to_proxy, proxy_to_server)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
