@@ -186,7 +186,7 @@ func read(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 		if n > 0 {
 			buffer := make([]byte, n)
 			length, err := reader.Read(buffer)
-			fmt.Println(time.Now().Format(time.Stamp) + " READ from client to proxy 80:" + strconv.Itoa(length))
+			fmt.Println(time.Now().Format(time.Stamp) + " READ from client to proxy:" + strconv.Itoa(length))
 			//fmt.Println(string(buffer[:readLeng]))
 			if length > 0 {
 				writeLength, err := writer.Write(buffer[:length])
