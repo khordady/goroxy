@@ -158,6 +158,16 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	//writer := bufio.NewWriter(client_to_proxy)
 
 	for {
+		firstByte, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERR8 ", err)
+			return
+		}
+		fmt.Println(string(firstByte))
+
+		n := reader.Buffered()
+		fmt.Println("Size of Buffered Data\n", n)
+
 		length, err := reader.Read(buffer)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from client to browser: " + strconv.Itoa(length))
@@ -187,6 +197,16 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(browser_to_client)
 
 	for {
+		firstByte, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERR8 ", err)
+			return
+		}
+		fmt.Println(string(firstByte))
+
+		n := reader.Buffered()
+		fmt.Println("Size of Buffered Data\n", n)
+
 		bytess, err := reader.ReadByte()
 		fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", string(bytess))
 		//fmt.Println(string(buffer[:length]))
