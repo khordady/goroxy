@@ -204,8 +204,12 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
 			//fmt.Println(string(buffer[:length]))
 			//if length > 0 {
-			writer.Write(buffer[:length])
-			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to browser: ")
+			write_length, err := writer.Write(buffer[:length])
+			if err != nil {
+				fmt.Println("ERR8 ", err)
+				return
+			}
+			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
 			if err != nil {
 				fmt.Println("ERR8 ", err)
 				return

@@ -106,13 +106,14 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		fmt.Println("CONNECTED TO: " + host[1])
 
-		length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
+		//length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		if err != nil {
 			return
 		}
-		fmt.Println("WROTED 200: ", length)
 		//writer := bufio.NewWriter(client_to_proxy)
-		//Writelength, err := client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		Writelength, err := client_to_proxy.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+		fmt.Println("WROTED 200: ", Writelength)
+
 		//_, e = writer.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		//_, e = writer.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
 		//_, e = writer.Write([]byte("\r\n"))
