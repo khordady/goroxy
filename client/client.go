@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net"
 	"os"
 	"strconv"
@@ -129,27 +128,6 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	//exchange(browser_to_client, client_to_server)
 }
 
-func exchange(src, dest net.Conn) {
-	fmt.Println("Start SRC: ", src.RemoteAddr())
-	defer func(src net.Conn) {
-		err := src.Close()
-		if err != nil {
-			fmt.Println("ERRCPP1 ", err)
-		}
-	}(src)
-	defer func(dest net.Conn) {
-		err := dest.Close()
-		if err != nil {
-			fmt.Println("ERRCPP2 ", err)
-		}
-	}(dest)
-	written, err := io.Copy(src, dest)
-	if err != nil {
-		fmt.Println("COPY ERROR CLIENT IS: ", written, err)
-		return
-	}
-}
-
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer client_to_proxy.Close()
 
@@ -167,7 +145,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			length, err := reader.Read(buffer)
 			if length > 0 {
 				fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
-				//fmt.Println(string(buffer[:readLeng]))
+				fmt.Println(string(buffer[:length]))
 
 				writeLength, err := writer.Write(buffer)
 				writer.Flush()
@@ -203,7 +181,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			length, err := reader.Read(buffer)
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
-			//fmt.Println(string(buffer[:length]))
+			fmt.Println(string(buffer[:length]))
 			//if length > 0 {
 			write_length, err := writer.Write(buffer)
 			writer.Flush()

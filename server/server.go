@@ -178,6 +178,7 @@ func write(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 
 func read(client_to_proxy net.Conn, proxy_to_server net.Conn) {
 	defer client_to_proxy.Close()
+
 	reader := bufio.NewReader(client_to_proxy)
 	writer := bufio.NewWriter(proxy_to_server)
 	for {

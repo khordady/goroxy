@@ -11,10 +11,15 @@ var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
 	key_length := len(key)
-	lenn := length % key_length
-	if lenn > 0 {
-		length = length + (key_length - lenn)
+	plus := (length + 2) % key_length
+	if plus > 0 {
+		length = length + (key_length - plus)
 	}
+
+	finalBytes := make([]byte, length)
+	copyArray(intTobytes(len(buffer)), finalBytes, 4)
+	copyArray(buffer, finalBytes, 4)
+
 	var err error
 	if cc == nil {
 		cc, err = aes.NewCipher([]byte(key))
@@ -25,7 +30,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	}
 	msgByte := make([]byte, length)
 
-	for i, j := 0, key_length; i < length-lenn; i, j = i+key_length, j+key_length {
+	for i, j := 0, key_length; i < length-plus; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], buffer[i:j])
 	}
 	return msgByte
@@ -91,4 +96,30 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 	}
 
 	return message
+}
+
+func intTobytes(size int) []byte {
+	bytes := make([]byte, 4)
+	bytes[0] = byte(0xff & size)
+	bytes[1] = byte(0xff & (size >> 8))
+	bytes[1] = byte(0xff & (size >> 16))
+	bytes[1] = byte(0xff & (size >> 32))
+
+	return bytes
+}
+
+func bytesToint(bytes [4]byte) int {
+	var result int
+	result = 0
+	for i := 3; i >= 0; i-- {
+		result = result << 8
+		result += int(bytes[i])
+	}
+	return result
+}
+
+func copyArray(src []byte, dst []byte, offset int) {
+	for i, b := range src {
+		(dst)[i+offset] = b
+	}
 }
