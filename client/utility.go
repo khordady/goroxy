@@ -58,7 +58,8 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	return msgByte
 }
 
-func processReceived(buffer []byte, length int, authentication bool, users []strUser, crypto string, crypto_key string) string {
+func processReceived(buffer []byte, length int, authentication bool, users []strUser,
+	crypto string, crypto_key string) string {
 	switch crypto {
 	case "None":
 		buffer = buffer[:length]
@@ -66,6 +67,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 
 	case "AES":
 		buffer = decryptAES(buffer, length, crypto_key)
+		buffer = buffer[4:]
 	}
 
 	message := string(buffer)
@@ -108,7 +110,7 @@ func intTobytes(size int) []byte {
 	return bytes
 }
 
-func bytesToint(bytes [4]byte) int {
+func bytesToint(bytes []byte) int {
 	var result int
 	result = 0
 	for i := 3; i >= 0; i-- {

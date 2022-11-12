@@ -123,9 +123,6 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 	go write(client_to_proxy, browser_to_client)
 	read(client_to_proxy, browser_to_client)
-
-	//go exchange(client_to_server, browser_to_client)
-	//exchange(browser_to_client, client_to_server)
 }
 
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
@@ -147,6 +144,9 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
 				fmt.Println(string(buffer[:length]))
 
+				if jjConfig.ListenEncryption == "None" {
+					buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
+				}
 				writeLength, err := writer.Write(buffer)
 				writer.Flush()
 				if writeLength > 0 {
@@ -181,20 +181,42 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			length, err := reader.Read(buffer)
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
-			fmt.Println(string(buffer[:length]))
-			//if length > 0 {
-			write_length, err := writer.Write(buffer)
-			writer.Flush()
-			if err != nil {
-				fmt.Println("ERR8 ", err)
-				return
+			//fmt.Println(string(buffer[:length]))
+
+			if jjConfig.ListenEncryption == "None" {
+				buffer = decryptAES(buffer, len(buffer), jjConfig.SendEncryptionKey)
+
+				for index := 0; index < len(buffer); {
+					length = bytesToint(buffer[index : index+4])
+					write_length, err := writer.Write(buffer[index+4 : index+4+length])
+					writer.Flush()
+
+					if err != nil {
+						fmt.Println("ERR8 ", err)
+						return
+					}
+					fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
+					if err != nil {
+						fmt.Println("ERR8 ", err)
+						return
+					}
+					index = index + 4 + length
+				}
+			} else {
+				write_length, err := writer.Write(buffer)
+				writer.Flush()
+
+				if err != nil {
+					fmt.Println("ERR8 ", err)
+					return
+				}
+				fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
+				if err != nil {
+					fmt.Println("ERR8 ", err)
+					return
+				}
 			}
-			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
-			if err != nil {
-				fmt.Println("ERR8 ", err)
-				return
-			}
-			//}
+
 			if err != nil {
 				fmt.Println("ERR81 ", err)
 				return
