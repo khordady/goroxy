@@ -37,6 +37,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
+	decrypted_buffers := make([]byte, 0)
 	key_length := len(key)
 	var err error
 	if cc == nil {
@@ -55,7 +56,14 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
 		cc.Decrypt(msgByte[i:j], buffer[i:j])
 	}
-	return msgByte
+
+	for index := 0; index < len(msgByte); {
+		length = bytesToint(msgByte[index : index+4])
+		decrypted_buffers = append(decrypted_buffers, msgByte[index+4:index+4+length]...)
+		index = index + 4 + length
+	}
+
+	return decrypted_buffers
 }
 
 func processReceived(buffer []byte, length int, authentication bool, users []strUser, crypto string, crypto_key string) string {
@@ -110,7 +118,7 @@ func intTobytes(size int) []byte {
 	return bytes
 }
 
-func bytesToint(bytes [4]byte) int {
+func bytesToint(bytes []byte) int {
 	var result int
 	result = 0
 	for i := 3; i >= 0; i-- {
@@ -124,4 +132,30 @@ func copyArray(src []byte, dst []byte, offset int) {
 	for i, b := range src {
 		(dst)[i+offset] = b
 	}
+}
+
+func processToHostBuffer(buffer []byte, length int) []byte {
+	if jjConfig.ListenEncryption == "None" {
+		return buffer
+	}
+
+	switch jjConfig.ListenEncryption {
+	case "AES":
+		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		break
+	}
+	return buffer
+}
+
+func processToClientBuffer(buffer []byte, length int) []byte {
+	if jjConfig.ListenEncryption == "None" {
+		return buffer
+	}
+
+	switch jjConfig.ListenEncryption {
+	case "AES":
+		buffer = encryptAES(buffer, len(buffer), jjConfig.ListenEncryptionKey)
+		break
+	}
+	return buffer
 }
