@@ -105,8 +105,14 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		fmt.Println("Message is: " + request)
 	}
 
-	if jjConfig.SendEncryption == "AES" {
+	switch jjConfig.SendEncryption {
+	case "Base64":
+		message = encodeBase64(buffer, len(message))
+		break
+
+	case "AES":
 		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
+		break
 	}
 
 	client_to_proxy, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)

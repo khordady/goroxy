@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/base64"
 	"fmt"
 	"strings"
 )
@@ -66,11 +67,33 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	return decrypted_buffers
 }
 
+func encodeBase64(buffer []byte, length int) []byte {
+	lengt := base64.StdEncoding.EncodedLen(length)
+	b64 := make([]byte, lengt)
+	base64.StdEncoding.Encode(b64, buffer[:length])
+
+	return b64
+}
+
+func decodeBase64(buffer []byte, length int) []byte {
+	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
+	_, err := base64.StdEncoding.Decode(b64, buffer[:length])
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return b64
+}
+
 func processReceived(buffer []byte, length int, authentication bool, users []strUser,
 	crypto string, crypto_key string) string {
 	switch crypto {
 	case "None":
 		buffer = buffer[:length]
+		break
+
+	case "Base64":
+		buffer = decodeBase64(buffer, length)
 		break
 
 	case "AES":
@@ -142,14 +165,22 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.ListenEncryption {
+	case "Base64":
+		buffer = decodeBase64(buffer, length)
+		break
+
 	case "AES":
 		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
 
 	switch jjConfig.SendEncryption {
+	case "Base64":
+		buffer = decodeBase64(buffer, length)
+		break
+
 	case "AES":
-		buffer = encryptAES(buffer, len(buffer), jjConfig.SendEncryptionKey)
+		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
 		break
 	}
 	return buffer
@@ -164,14 +195,23 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.SendEncryption {
+	case "Base64":
+		buffer = decodeBase64(buffer, length)
+		break
+
 	case "AES":
 		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
 
 	switch jjConfig.ListenEncryption {
+
+	case "Base64":
+		buffer = encodeBase64(buffer, length)
+		break
+
 	case "AES":
-		buffer = encryptAES(buffer, len(buffer), jjConfig.SendEncryptionKey)
+		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
 		break
 	}
 	return buffer
