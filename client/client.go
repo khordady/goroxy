@@ -192,7 +192,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
 
 			buffer = processToBrowserBuffer(buffer, length)
-			//fmt.Println(string(buffer))
+			fmt.Println(string(buffer))
 
 			write_length, err := writer.Write(buffer)
 			writer.Flush()

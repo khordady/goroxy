@@ -176,7 +176,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 
 	switch jjConfig.SendEncryption {
 	case "Base64":
-		buffer = decodeBase64(buffer, length)
+		buffer = encodeBase64(buffer, length)
 		break
 
 	case "AES":
