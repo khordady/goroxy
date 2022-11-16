@@ -61,7 +61,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		err = conn.SetReadDeadline(time.Time{})
+		err = conn.SetDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -188,8 +188,8 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	for {
 		client_to_proxy.SetReadDeadline(time.Now().Add(1 * time.Second))
 		_, err := reader.Peek(1)
-		if err != nil {
-			fmt.Println("ERR5 ", err)
+		if !os.IsTimeout(err) {
+			fmt.Println("ERR51 ", err)
 			return
 		}
 		n := reader.Buffered()
