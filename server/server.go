@@ -151,7 +151,11 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
-		reader.Peek(1)
+		_, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERROR8 ", err)
+			return
+		}
 		n := reader.Buffered()
 		if n > 0 {
 			buffer := make([]byte, n)
@@ -182,7 +186,11 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	reader := bufio.NewReader(client_to_proxy)
 	writer := bufio.NewWriter(proxy_to_host)
 	for {
-		reader.Peek(1)
+		_, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERR5 ", err)
+			return
+		}
 		n := reader.Buffered()
 		if n > 0 {
 			buffer := make([]byte, n)
@@ -199,6 +207,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 				}
 			}
 			if err != nil {
+				fmt.Println("ERR5 ", err)
 				return
 			}
 		}

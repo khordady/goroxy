@@ -107,11 +107,11 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 	switch jjConfig.SendEncryption {
 	case "Base64":
-		message = encodeBase64(buffer, len(message))
+		message = encodeBase64(message, len(message))
 		break
 
 	case "AES":
-		message = encryptAES(buffer, len(message), jjConfig.ListenEncryptionKey)
+		message = encryptAES(message, len(message), jjConfig.ListenEncryptionKey)
 		break
 	}
 
@@ -138,7 +138,11 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
-		reader.Peek(1)
+		_, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERR6 ", err)
+			return
+		}
 		n := reader.Buffered()
 		if n > 0 {
 			fmt.Println("Size of Buffered Data: ", n)
@@ -175,7 +179,11 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(browser_to_client)
 
 	for {
-		reader.Peek(1)
+		_, err := reader.Peek(1)
+		if err != nil {
+			fmt.Println("ERR8 ", err)
+			return
+		}
 		n := reader.Buffered()
 		if n > 0 {
 			fmt.Println("Size of Buffered Data: ", n)

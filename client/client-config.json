@@ -9,9 +9,9 @@
       "ListenPassword": "Goroxy"
     }
   ],
-  "Server": "185.221.237.166",
+  "Server": "192.168.1.102",
   "ServerPort": "8181",
-  "SendEncryption": "AES",
+  "SendEncryption": "Base64",
   "SendEncryptionKey": "SOMETHING 16 bit",
   "SendAuthentication": true,
   "SendUserName": "Goroxy",
