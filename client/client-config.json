@@ -11,7 +11,7 @@
   ],
   "Server": "192.168.1.102",
   "ServerPort": "8181",
-  "SendEncryption": "Base64",
+  "SendEncryption": "AES",
   "SendEncryptionKey": "SOMETHING 16 bit",
   "SendAuthentication": true,
   "SendUserName": "Goroxy",
