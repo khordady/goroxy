@@ -15,6 +15,8 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	plus := (length + 2) % key_length
 	if plus > 0 {
 		length = length + (key_length - plus)
+		plusBUffer := make([]byte, plus)
+		buffer = append(buffer, plusBUffer...)
 	}
 
 	finalBytes := make([]byte, length)
