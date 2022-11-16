@@ -175,11 +175,11 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 				return
 			}
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy:" + strconv.Itoa(length))
-			fmt.Println(string(buffer[:length]))
+			//fmt.Println(string(buffer[:length]))
 			if length > 0 {
 				buffer = processToClientBuffer(buffer, length)
 				fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(buffer)))
-				fmt.Println(string(buffer))
+				//fmt.Println(string(buffer))
 				writeLength, errw := writer.Write(buffer)
 				if errw != nil {
 					fmt.Println("ERR4 ", errw)
@@ -217,11 +217,11 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 				return
 			}
 			fmt.Println(time.Now().Format(time.Stamp) + "Encoded READ from client to proxy:" + strconv.Itoa(length))
-			fmt.Println(string(buffer[:length]))
+			//fmt.Println(string(buffer[:length]))
 			if length > 0 {
 				buffer = processToHostBuffer(buffer, length)
 				fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to server :" + strconv.Itoa(len(buffer)))
-				fmt.Println(string(buffer))
+				//fmt.Println(string(buffer))
 				writeLength, errw := writer.Write(buffer)
 				if errw != nil {
 					fmt.Println("ERR5 ", err)
