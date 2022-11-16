@@ -163,10 +163,9 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 		proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
 
 		length, err := proxy_to_host.Read(buffer)
-
-		fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy:" + strconv.Itoa(length))
-		//fmt.Println(string(buffer[:length]))
 		if length > 0 {
+			fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy:" + strconv.Itoa(length))
+			//fmt.Println(string(buffer[:length]))
 			buffer = processToClientBuffer(buffer, length)
 			fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(buffer)))
 			//fmt.Println(string(buffer))
