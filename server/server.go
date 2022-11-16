@@ -91,7 +91,6 @@ func handleSocket(client_to_proxy net.Conn) {
 	for _, header := range headers {
 		if strings.HasPrefix(header, "Host") {
 			host = strings.Split(header, " ")
-			fmt.Println("HOST ISSSSSSSS:" + host[1])
 			break
 		}
 	}
@@ -162,7 +161,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	for {
 		proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
 		_, err := reader.Peek(1)
-		if err != nil {
+		if !os.IsTimeout(err) && err != nil {
 			fmt.Println("ERROR8 ", err)
 			return
 		}
