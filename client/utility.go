@@ -77,12 +77,12 @@ func encodeBase64(buffer []byte, length int) []byte {
 
 func decodeBase64(buffer []byte, length int) []byte {
 	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
-	_, err := base64.StdEncoding.Decode(b64, buffer[:length])
+	n, err := base64.StdEncoding.Decode(b64, buffer[:length])
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
-	return b64
+	return b64[:n]
 }
 
 func processReceived(buffer []byte, length int, authentication bool, users []strUser,

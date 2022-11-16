@@ -35,6 +35,10 @@ type strUser struct {
 var jjConfig strClientConfig
 
 func main() {
+	//a := []int{0, 1, 2, 3, 4, 5, 6}
+	//b := a[:4]
+	//b[6] = 12
+	//fmt.Println(len(a), len(b))
 	fmt.Println("Reading client-config.json")
 	readFile, err := os.Open("client-config.json")
 
