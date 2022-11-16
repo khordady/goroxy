@@ -202,7 +202,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	reader := bufio.NewReader(client_to_proxy)
 	writer := bufio.NewWriter(proxy_to_host)
 	for {
-		client_to_proxy.SetReadDeadline(time.Now().Add(1 * time.Second))
+		//client_to_proxy.SetReadDeadline(time.Now().Add(1 * time.Second))
 		_, err := reader.Peek(1)
 		if !os.IsTimeout(err) && err != nil {
 			fmt.Println("ERR51 ", err)
