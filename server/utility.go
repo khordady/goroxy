@@ -18,8 +18,8 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	}
 
 	finalBytes := make([]byte, length)
-	copyArray(intTobytes(len(buffer)), finalBytes, 4)
-	copyArray(buffer, finalBytes, 4)
+	copyArray(intTobytes(length), finalBytes, 4)
+	copyArray(buffer[:length], finalBytes, 4)
 
 	var err error
 	if cc == nil {
@@ -70,7 +70,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 func encodeBase64(buffer []byte, length int) []byte {
 	lengt := base64.StdEncoding.EncodedLen(length)
 	b64 := make([]byte, lengt)
-	base64.StdEncoding.Encode(b64, buffer)
+	base64.StdEncoding.Encode(b64, buffer[:length])
 
 	return b64
 }

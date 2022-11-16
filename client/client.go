@@ -136,10 +136,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 	for {
 		_, err := reader.Peek(1)
-		if err != nil {
-			fmt.Println("ERR6 ", err)
-			return
-		}
+
 		n := reader.Buffered()
 		if n > 0 {
 			fmt.Println("Size of Buffered Data: ", n)
@@ -172,6 +169,10 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
 			}
 		}
+		if err != nil {
+			fmt.Println("ERR6 ", err)
+			return
+		}
 	}
 }
 
@@ -184,10 +185,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	for {
 		client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
 		_, err := reader.Peek(1)
-		if !os.IsTimeout(err) && err != nil {
-			fmt.Println("ERR81 ", err)
-			return
-		}
+
 		n := reader.Buffered()
 		if n > 0 {
 			fmt.Println("Size of Buffered Data: ", n)
@@ -219,6 +217,11 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			}
 
 			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
+		}
+
+		if !os.IsTimeout(err) && err != nil {
+			fmt.Println("ERR81 ", err)
+			return
 		}
 	}
 }
