@@ -12,15 +12,15 @@ var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
 	key_length := len(key)
-	plus := (length + 2) % key_length
+	plus := (length + 4) % key_length
 	if plus > 0 {
-		length = length + (key_length - plus)
-		plusBUffer := make([]byte, plus)
-		buffer = append(buffer, plusBUffer...)
+		length = length + 4 + (key_length - plus)
+		plusBuffer := make([]byte, key_length-plus)
+		buffer = append(buffer, plusBuffer...)
 	}
 
 	finalBytes := make([]byte, length)
-	copyArray(intTobytes(len(buffer)), finalBytes, 4)
+	copyArray(intTobytes(len(buffer)), finalBytes, 0)
 	copyArray(buffer, finalBytes, 4)
 
 	var err error
