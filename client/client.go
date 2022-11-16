@@ -71,7 +71,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		//err = conn.SetReadDeadline(time.Time{})
+		err = conn.SetReadDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -187,7 +187,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(browser_to_client)
 
 	for {
-		client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
+		//client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
 		_, err := reader.Peek(1)
 
 		n := reader.Buffered()

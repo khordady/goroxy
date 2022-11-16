@@ -60,7 +60,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		//err = conn.SetDeadline(time.Time{})
+		err = conn.SetDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -160,7 +160,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	buffer := make([]byte, 32*1024)
 
 	for {
-		proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
+		//proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
 
 		length, err := proxy_to_host.Read(buffer)
 		if length > 0 {
@@ -194,7 +194,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	reader := bufio.NewReader(client_to_proxy)
 	writer := bufio.NewWriter(proxy_to_host)
 	for {
-		client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
+		//client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
 		_, err := reader.Peek(1)
 
 		n := reader.Buffered()
