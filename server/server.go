@@ -188,7 +188,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	for {
 		client_to_proxy.SetReadDeadline(time.Now().Add(1 * time.Second))
 		_, err := reader.Peek(1)
-		if !os.IsTimeout(err) {
+		if !os.IsTimeout(err) && err != nil {
 			fmt.Println("ERR51 ", err)
 			return
 		}
