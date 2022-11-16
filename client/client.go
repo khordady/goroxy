@@ -146,7 +146,11 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			buffer := make([]byte, n)
 
-			length, err := reader.Read(buffer)
+			length, errr := reader.Read(buffer)
+			if errr != nil {
+				fmt.Println("ERR6 ", errr)
+				return
+			}
 			if length > 0 {
 				fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
 				fmt.Println(string(buffer[:length]))
@@ -155,17 +159,17 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				fmt.Println(time.Now().Format(time.Stamp) + "Decode WRITE from client to proxy: " + strconv.Itoa(len(buffer)))
 				fmt.Println(string(buffer))
 
-				writeLength, err := writer.Write(buffer)
-				writer.Flush()
-				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
-				if err != nil {
-					fmt.Println("ERR6 ", err)
+				writeLength, errw := writer.Write(buffer)
+				if errw != nil {
+					fmt.Println("ERR6 ", errw)
 					return
 				}
-			}
-			if err != nil {
-				fmt.Println("ERR5 ", err)
-				return
+				errw = writer.Flush()
+				if errw != nil {
+					fmt.Println("ERR6 ", errw)
+					return
+				}
+				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
 			}
 		}
 	}
@@ -190,27 +194,31 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			buffer := make([]byte, n)
 
-			length, err := reader.Read(buffer)
-			fmt.Println(time.Now().Format(time.Stamp)+"Encoded READ from proxy to client: ", length)
+			length, errr := reader.Read(buffer)
+			if errr != nil {
+				fmt.Println("ERR8 ", errr)
+				return
+			}
+			fmt.Println(time.Now().Format(time.Stamp)+" Encoded READ from proxy to client: ", length)
 			fmt.Println(string(buffer))
 
 			buffer = processToBrowserBuffer(buffer, length)
-			fmt.Println(time.Now().Format(time.Stamp)+"Decoded WRITE from client to browser: ", length)
+			fmt.Println(time.Now().Format(time.Stamp)+" Decoded WRITE from client to browser: ", length)
 			fmt.Println(string(buffer))
 
-			write_length, err := writer.Write(buffer)
-			writer.Flush()
+			write_length, errw := writer.Write(buffer)
+			if errw != nil {
+				fmt.Println("ERR8 ", errw)
+				return
+			}
+
+			errw = writer.Flush()
+			if errw != nil {
+				fmt.Println("ERR82 ", errw)
+				return
+			}
 
 			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
-			if err != nil {
-				fmt.Println("ERR8 ", err)
-				return
-			}
-
-			if err != nil {
-				fmt.Println("ERR81 ", err)
-				return
-			}
 		}
 	}
 }

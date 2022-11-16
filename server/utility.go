@@ -70,14 +70,14 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 func encodeBase64(buffer []byte, length int) []byte {
 	lengt := base64.StdEncoding.EncodedLen(length)
 	b64 := make([]byte, lengt)
-	base64.StdEncoding.Encode(b64, buffer[:length])
+	base64.StdEncoding.Encode(b64, buffer)
 
 	return b64
 }
 
 func decodeBase64(buffer []byte, length int) []byte {
 	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
-	_, err := base64.StdEncoding.Decode(b64, buffer[:length])
+	_, err := base64.StdEncoding.Decode(b64, buffer)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -175,9 +175,6 @@ func processToHostBuffer(buffer []byte, length int) []byte {
 
 func processToClientBuffer(buffer []byte, length int) []byte {
 	switch jjConfig.ListenEncryption {
-	case "None":
-		break
-
 	case "Base64":
 		buffer = encodeBase64(buffer, length)
 		break

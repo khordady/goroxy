@@ -13,7 +13,6 @@ import (
 )
 
 type strServerConfig struct {
-	PrintLog             bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -170,24 +169,28 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 		if n > 0 {
 			buffer := make([]byte, n)
 
-			length, err := reader.Read(buffer)
+			length, errr := reader.Read(buffer)
+			if errr != nil {
+				fmt.Println("ERROR8 ", errr)
+				return
+			}
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy:" + strconv.Itoa(length))
 			fmt.Println(string(buffer[:length]))
 			if length > 0 {
 				buffer = processToClientBuffer(buffer, length)
 				fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(buffer)))
 				fmt.Println(string(buffer))
-				writeLength, err := writer.Write(buffer)
-				writer.Flush()
-				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to client:" + strconv.Itoa(writeLength))
-				if err != nil {
-					fmt.Println("ERR4 ", err)
+				writeLength, errw := writer.Write(buffer)
+				if errw != nil {
+					fmt.Println("ERR4 ", errw)
 					return
 				}
-			}
-			if err != nil {
-				fmt.Println("ERROR8 ", err)
-				return
+				errw = writer.Flush()
+				if errw != nil {
+					fmt.Println("ERR4 ", errw)
+					return
+				}
+				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to client:" + strconv.Itoa(writeLength))
 			}
 		}
 	}
@@ -208,15 +211,27 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 		n := reader.Buffered()
 		if n > 0 {
 			buffer := make([]byte, n)
-			length, err := reader.Read(buffer)
+			length, errr := reader.Read(buffer)
+			if errr != nil {
+				fmt.Println("ERR5 ", errr)
+				return
+			}
 			fmt.Println(time.Now().Format(time.Stamp) + "Encoded READ from client to proxy:" + strconv.Itoa(length))
 			fmt.Println(string(buffer[:length]))
 			if length > 0 {
 				buffer = processToHostBuffer(buffer, length)
 				fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to server :" + strconv.Itoa(len(buffer)))
 				fmt.Println(string(buffer))
-				writeLength, err := writer.Write(buffer)
-				writer.Flush()
+				writeLength, errw := writer.Write(buffer)
+				if errw != nil {
+					fmt.Println("ERR5 ", err)
+					return
+				}
+				errw = writer.Flush()
+				if errw != nil {
+					fmt.Println("ERR5 ", err)
+					return
+				}
 				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to server :" + strconv.Itoa(writeLength))
 				if err != nil {
 					fmt.Println("ERR5 ", err)
