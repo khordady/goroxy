@@ -160,6 +160,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
+		proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
 		_, err := reader.Peek(1)
 		if err != nil {
 			fmt.Println("ERROR8 ", err)
