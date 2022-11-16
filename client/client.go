@@ -192,7 +192,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
 
 			buffer = processToBrowserBuffer(buffer, length)
-			fmt.Println(string(buffer))
+			//fmt.Println(string(buffer))
 
 			write_length, err := writer.Write(buffer)
 			writer.Flush()
@@ -210,85 +210,3 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 		}
 	}
 }
-
-//func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
-//	defer browser_to_client.Close()
-//
-//	reader := bufio.NewReader(client_to_proxy)
-//	writer := bufio.NewWriter(browser_to_client)
-//
-//	for {
-//		_, err := reader.Peek(1)
-//		if err != nil {
-//			fmt.Println("ERR8 ", err)
-//			return
-//		}
-//		n := reader.Buffered()
-//		if n > 0 {
-//			fmt.Println("Size of Buffered Data: ", n)
-//
-//			buffer := make([]byte, n)
-//
-//			length, err := reader.Read(buffer)
-//			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
-//
-//			buffer = processToBrowserBuffer(buffer, length)
-//			fmt.Println(string(buffer))
-//
-//			write_length, err := writer.Write(buffer)
-//			writer.Flush()
-//
-//			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
-//			if err != nil {
-//				fmt.Println("ERR8 ", err)
-//				return
-//			}
-//
-//			if err != nil {
-//				fmt.Println("ERR81 ", err)
-//				return
-//			}
-//		}
-//	}
-//}
-//
-//func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
-//	defer client_to_proxy.Close()
-//
-//	reader := bufio.NewReader(browser_to_client)
-//	writer := bufio.NewWriter(client_to_proxy)
-//
-//	for {
-//		_, err := reader.Peek(1)
-//		if err != nil {
-//			fmt.Println("ERR6 ", err)
-//			return
-//		}
-//		n := reader.Buffered()
-//		if n > 0 {
-//			fmt.Println("Size of Buffered Data: ", n)
-//
-//			buffer := make([]byte, n)
-//
-//			length, err := reader.Read(buffer)
-//			if length > 0 {
-//				fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
-//				fmt.Println(string(buffer[:length]))
-//
-//				writeLength, err := writer.Write(processToProxyBuffer(buffer, length))
-//				writer.Flush()
-//				if writeLength > 0 {
-//					fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
-//				}
-//				if err != nil {
-//					fmt.Println("ERR6 ", err)
-//					return
-//				}
-//			}
-//			if err != nil {
-//				fmt.Println("ERR5 ", err)
-//				return
-//			}
-//		}
-//	}
-//}
