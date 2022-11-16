@@ -13,7 +13,6 @@ import (
 )
 
 type strClientConfig struct {
-	PrintLog             bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -68,7 +67,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		err = conn.SetDeadline(time.Time{})
+		err = conn.SetReadDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -101,9 +100,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	if jjConfig.PrintLog {
-		fmt.Println("Message is: " + request)
-	}
+	fmt.Println("Message is: " + request)
 
 	switch jjConfig.SendEncryption {
 	case "Base64":
@@ -179,6 +176,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(browser_to_client)
 
 	for {
+		client_to_proxy.SetReadDeadline(time.Now().Add(1 * time.Second))
 		_, err := reader.Peek(1)
 		if err != nil {
 			fmt.Println("ERR8 ", err)
@@ -192,9 +190,11 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			length, err := reader.Read(buffer)
 			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
-			//fmt.Println(string(buffer[:length]))
 
-			write_length, err := writer.Write(processToBrowserBuffer(buffer, length))
+			buffer = processToBrowserBuffer(buffer, length)
+			fmt.Println(string(buffer))
+
+			write_length, err := writer.Write(buffer)
 			writer.Flush()
 
 			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
@@ -210,3 +210,85 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 		}
 	}
 }
+
+//func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
+//	defer browser_to_client.Close()
+//
+//	reader := bufio.NewReader(client_to_proxy)
+//	writer := bufio.NewWriter(browser_to_client)
+//
+//	for {
+//		_, err := reader.Peek(1)
+//		if err != nil {
+//			fmt.Println("ERR8 ", err)
+//			return
+//		}
+//		n := reader.Buffered()
+//		if n > 0 {
+//			fmt.Println("Size of Buffered Data: ", n)
+//
+//			buffer := make([]byte, n)
+//
+//			length, err := reader.Read(buffer)
+//			fmt.Println(time.Now().Format(time.Stamp)+" READ from proxy to client: ", length)
+//
+//			buffer = processToBrowserBuffer(buffer, length)
+//			fmt.Println(string(buffer))
+//
+//			write_length, err := writer.Write(buffer)
+//			writer.Flush()
+//
+//			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
+//			if err != nil {
+//				fmt.Println("ERR8 ", err)
+//				return
+//			}
+//
+//			if err != nil {
+//				fmt.Println("ERR81 ", err)
+//				return
+//			}
+//		}
+//	}
+//}
+//
+//func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
+//	defer client_to_proxy.Close()
+//
+//	reader := bufio.NewReader(browser_to_client)
+//	writer := bufio.NewWriter(client_to_proxy)
+//
+//	for {
+//		_, err := reader.Peek(1)
+//		if err != nil {
+//			fmt.Println("ERR6 ", err)
+//			return
+//		}
+//		n := reader.Buffered()
+//		if n > 0 {
+//			fmt.Println("Size of Buffered Data: ", n)
+//
+//			buffer := make([]byte, n)
+//
+//			length, err := reader.Read(buffer)
+//			if length > 0 {
+//				fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
+//				fmt.Println(string(buffer[:length]))
+//
+//				writeLength, err := writer.Write(processToProxyBuffer(buffer, length))
+//				writer.Flush()
+//				if writeLength > 0 {
+//					fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
+//				}
+//				if err != nil {
+//					fmt.Println("ERR6 ", err)
+//					return
+//				}
+//			}
+//			if err != nil {
+//				fmt.Println("ERR5 ", err)
+//				return
+//			}
+//		}
+//	}
+//}
