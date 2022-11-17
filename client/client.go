@@ -82,7 +82,7 @@ func main() {
 }
 
 func handleBrowserToClient(browser_to_client net.Conn) {
-	buffer := make([]byte, 9*1024)
+	buffer := make([]byte, 8*1024)
 	length, err := bufio.NewReader(browser_to_client).Read(buffer)
 	if err != nil {
 		fmt.Println("ERR1 ", err)
@@ -107,9 +107,9 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	fmt.Println("Message is: " + request)
 
 	switch jjConfig.SendEncryption {
-	case "Base64":
-		message = encodeBase64(message, len(message))
-		break
+	//case "Base64":
+	//	message = encodeBase64(message, len(message))
+	//	break
 
 	case "AES":
 		message = encryptAES(message, len(message), jjConfig.ListenEncryptionKey)
