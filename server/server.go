@@ -72,11 +72,7 @@ func main() {
 
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
-	length, err := bufio.NewReader(client_to_proxy).Read(buffer)
-	if err != nil {
-		fmt.Println("ERR1 ", err)
-		return
-	}
+	length, err := readBuffer(buffer, client_to_proxy)
 
 	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
@@ -111,9 +107,9 @@ func handleSocket(client_to_proxy net.Conn) {
 		//writer := bufio.NewWriter(client_to_proxy)
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 		switch jjConfig.ListenEncryption {
-		case "Base64":
-			bytess = encodeBase64(bytess, len(bytess))
-			break
+		//case "Base64":
+		//	bytess = encodeBase64(bytess, len(bytess))
+		//	break
 
 		case "AES":
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
@@ -156,12 +152,9 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer proxy_to_host.Close()
 
 	//reader := bufio.NewReader(proxy_to_host)
-	writer := bufio.NewWriter(client_to_proxy)
-	buffer := make([]byte, 32*1024)
+	buffer := make([]byte, (32*1024)-4)
 
 	for {
-		//proxy_to_host.SetReadDeadline(time.Now().Add(3 * time.Second))
-
 		length, err := proxy_to_host.Read(buffer)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from server to proxy:" + strconv.Itoa(length))
@@ -169,12 +162,12 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			buffer = processToClientBuffer(buffer, length)
 			fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(buffer)))
 			//fmt.Println(string(buffer))
-			writeLength, errw := writer.Write(buffer)
+			writeLength, errw := client_to_proxy.Write(intTobytes(len(buffer)))
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
 			}
-			errw = writer.Flush()
+			writeLength, errw = client_to_proxy.Write(buffer)
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
@@ -190,52 +183,46 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
+	buffer := make([]byte, (32*1024)-4)
 
-	reader := bufio.NewReader(client_to_proxy)
-	writer := bufio.NewWriter(proxy_to_host)
 	for {
-		//client_to_proxy.SetReadDeadline(time.Now().Add(3 * time.Second))
-		_, err := reader.Peek(1)
+		length, errr := proxy_to_host.Read(buffer)
+		if length > 0 {
+			fmt.Println(time.Now().Format(time.Stamp) + "Read from host to proxy :" + strconv.Itoa(len(buffer)))
 
-		n := reader.Buffered()
-		if n > 0 {
-			buffer := make([]byte, n)
-			length, errr := reader.Read(buffer)
-			if errr != nil {
-				fmt.Println("ERR5 ", errr)
+			buffer = processToHostBuffer(buffer, length)
+			fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to host :" + strconv.Itoa(len(buffer)))
+			//fmt.Println(string(buffer))
+			writeLength, errw := proxy_to_host.Write(buffer)
+			if errw != nil {
+				fmt.Println("ERR5 ", errw)
 				return
 			}
-			fmt.Println(time.Now().Format(time.Stamp) + "Encoded READ from client to proxy:" + strconv.Itoa(length))
-			//fmt.Println(string(buffer[:length]))
-			if length > 0 {
-				buffer = processToHostBuffer(buffer, length)
-				fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to server :" + strconv.Itoa(len(buffer)))
-				//fmt.Println(string(buffer))
-				writeLength, errw := writer.Write(buffer)
-				if errw != nil {
-					fmt.Println("ERR5 ", err)
-					return
-				}
-				errw = writer.Flush()
-				if errw != nil {
-					fmt.Println("ERR5 ", err)
-					return
-				}
-				fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to server :" + strconv.Itoa(writeLength))
-				if err != nil {
-					fmt.Println("ERR5 ", err)
-					return
-				}
-			}
-			if err != nil {
-				fmt.Println("ERR5 ", err)
-				return
-			}
+			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to host :" + strconv.Itoa(writeLength))
 		}
 
-		if !os.IsTimeout(err) && err != nil {
-			fmt.Println("ERR51 ", err)
+		if errr != nil {
+			fmt.Println("ERR51 ", errr)
 			return
 		}
 	}
+}
+
+func readBuffer(buffer []byte, src net.Conn) (int, error) {
+	size := make([]byte, 2)
+
+	var total = 0
+	leng, err := src.Read(size)
+	if leng > 0 {
+		realSize := bytesToint(size)
+		for total < realSize {
+			length, errr := src.Read(buffer[total:])
+			total = total + length
+
+			if errr != nil {
+				return total, errr
+			}
+		}
+	}
+	return total, err
 }

@@ -19,8 +19,8 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	}
 
 	finalBytes := make([]byte, length)
-	copyArray(intTobytes(length), finalBytes, 0)
-	copyArray(buffer[:length], finalBytes, 4)
+	copyArray(intTobytes(len(buffer)), finalBytes, 0)
+	copyArray(buffer, finalBytes, 4)
 
 	var err error
 	if cc == nil {
@@ -39,7 +39,6 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
-	decrypted_buffers := make([]byte, 0)
 	key_length := len(key)
 	var err error
 	if cc == nil {
@@ -59,11 +58,10 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 		cc.Decrypt(msgByte[i:j], buffer[i:j])
 	}
 
-	for index := 0; index < len(msgByte); {
-		length = bytesToint(msgByte[index : index+4])
-		decrypted_buffers = append(decrypted_buffers, msgByte[index+4:index+4+length]...)
-		index = index + 4 + length
-	}
+	decrypted_buffers := make([]byte, 0)
+
+	leng := bytesToint(msgByte[:4])
+	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
 	return decrypted_buffers
 }
@@ -101,13 +99,13 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 	}
 
 	message := string(buffer)
-	message = message[:strings.LastIndex(message, "\r\n\r\n")+4]
-	//fmt.Println(message)
-
 	if !strings.Contains(message, "\r\n") {
 		fmt.Println("Wrong UserPass")
 		return ""
 	}
+
+	message = message[:strings.LastIndex(message, "\r\n\r\n")+4]
+	//fmt.Println(message)
 
 	if authentication {
 		splited := strings.Split(message, "\r\n")
@@ -145,7 +143,7 @@ func intTobytes(size int) []byte {
 func bytesToint(bytes []byte) int {
 	var result int
 	result = 0
-	for i := 3; i >= 0; i-- {
+	for i := 1; i >= 0; i-- {
 		result = result << 8
 		result += int(bytes[i])
 	}

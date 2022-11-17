@@ -39,7 +39,6 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
-	decrypted_buffers := make([]byte, 0)
 	key_length := len(key)
 	var err error
 	if cc == nil {
@@ -59,11 +58,10 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 		cc.Decrypt(msgByte[i:j], buffer[i:j])
 	}
 
-	for index := 0; index < len(msgByte); {
-		length = bytesToint(msgByte[index : index+4])
-		decrypted_buffers = append(decrypted_buffers, msgByte[index+4:index+4+length]...)
-		index = index + 4 + length
-	}
+	decrypted_buffers := make([]byte, 0)
+
+	leng := bytesToint(msgByte[:4])
+	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
 	return decrypted_buffers
 }
@@ -75,7 +73,7 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 //
 //	return b64
 //}
-
+//
 //func decodeBase64(buffer []byte, length int) []byte {
 //	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
 //	n, err := base64.StdEncoding.Decode(b64, buffer[:length])
