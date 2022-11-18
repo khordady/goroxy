@@ -21,7 +21,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 
 	finalBytes := make([]byte, finalLength)
 	copyArray(intTobytes(length), finalBytes, 0)
-	copyArray(buffer, finalBytes, 4)
+	copyArray(buffer[:length], finalBytes, 4)
 
 	var err error
 	if cc == nil {
