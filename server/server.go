@@ -115,7 +115,8 @@ func handleSocket(client_to_proxy net.Conn) {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
 			break
 		}
-		Writelength, err := client_to_proxy.Write(bytess)
+		Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
+		Writelength, err = client_to_proxy.Write(bytess)
 		fmt.Println("WROTED 200: ", Writelength)
 
 		//_, e = writer.Write([]byte("TEST MESSAGE FROM GITHUB"))
