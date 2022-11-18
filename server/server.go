@@ -183,7 +183,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
-	buffer := make([]byte, (32*1024)-4)
+	buffer := make([]byte, 32*1024)
 
 	for {
 		length, errr := proxy_to_host.Read(buffer)
@@ -213,6 +213,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
+	fmt.Println(leng)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		for total < realSize {

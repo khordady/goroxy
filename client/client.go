@@ -106,16 +106,6 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 	fmt.Println("Message is: " + request)
 
-	switch jjConfig.SendEncryption {
-	//case "Base64":
-	//	message = encodeBase64(message, len(message))
-	//	break
-
-	case "AES":
-		message = encryptAES(message, len(message), jjConfig.ListenEncryptionKey)
-		break
-	}
-
 	client_to_proxy, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
 	if e != nil {
 		fmt.Println("ERR2 ", e)
@@ -207,6 +197,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
+	fmt.Println(leng)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		for total < realSize {
