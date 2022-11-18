@@ -201,7 +201,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 		realSize := bytesToint(size)
 		fmt.Println(realSize)
 		for total < realSize {
-			length, errr := src.Read(buffer[total : realSize-total])
+			length, errr := src.Read(buffer[total:realSize])
 			total = total + length
 
 			if errr != nil {
