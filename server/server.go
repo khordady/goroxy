@@ -186,7 +186,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	bufferReader := make([]byte, 32*1024)
 
 	for {
-		length, errr := client_to_proxy.Read(bufferReader)
+		length, errr := readBuffer(bufferReader, client_to_proxy)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " Read from host to proxy :" + strconv.Itoa(length))
 
