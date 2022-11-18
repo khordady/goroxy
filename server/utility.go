@@ -34,7 +34,7 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	msgByte := make([]byte, finalLength)
 
 	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
-		cc.Encrypt(msgByte[i:j], buffer[i:j])
+		cc.Encrypt(msgByte[i:j], finalBytes[i:j])
 	}
 	return msgByte
 }
