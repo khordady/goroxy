@@ -10,16 +10,17 @@ import (
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
+	finalLength := 0
 	key_length := len(key)
 	plus := (length + 4) % key_length
 	if plus > 0 {
-		length = length + 4 + (key_length - plus)
+		finalLength = length + 4 + (key_length - plus)
 		plusBuffer := make([]byte, key_length-plus)
 		buffer = append(buffer, plusBuffer...)
 	}
 
-	finalBytes := make([]byte, length)
-	copyArray(intTobytes(len(buffer)), finalBytes, 0)
+	finalBytes := make([]byte, finalLength)
+	copyArray(intTobytes(length), finalBytes, 0)
 	copyArray(buffer, finalBytes, 4)
 
 	var err error
@@ -30,9 +31,9 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 			return nil
 		}
 	}
-	msgByte := make([]byte, length)
+	msgByte := make([]byte, finalLength)
 
-	for i, j := 0, key_length; i < length-plus; i, j = i+key_length, j+key_length {
+	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], buffer[i:j])
 	}
 	return msgByte
