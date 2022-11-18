@@ -152,22 +152,22 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer proxy_to_host.Close()
 
 	//reader := bufio.NewReader(proxy_to_host)
-	buffer := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, (32*1024)-4)
 
 	for {
-		length, err := proxy_to_host.Read(buffer)
+		length, err := proxy_to_host.Read(bufferReader)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from host to proxy:" + strconv.Itoa(length))
 			//fmt.Println(string(buffer[:length]))
-			buffer = processToClientBuffer(buffer, length)
-			fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(buffer)))
+			bufferWriter := processToClientBuffer(bufferReader, length)
+			fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
-			writeLength, errw := client_to_proxy.Write(intTobytes(len(buffer)))
+			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
 			}
-			writeLength, errw = client_to_proxy.Write(buffer)
+			writeLength, errw = client_to_proxy.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
@@ -183,17 +183,17 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
-	buffer := make([]byte, 32*1024)
+	bufferReader := make([]byte, 32*1024)
 
 	for {
-		length, errr := client_to_proxy.Read(buffer)
+		length, errr := client_to_proxy.Read(bufferReader)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " Read from host to proxy :" + strconv.Itoa(length))
 
-			buffer = processToHostBuffer(buffer, length)
+			bufferWriter := processToHostBuffer(bufferReader, length)
 			fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to host :" + strconv.Itoa(length))
 			//fmt.Println(string(buffer))
-			writeLength, errw := proxy_to_host.Write(buffer)
+			writeLength, errw := proxy_to_host.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR5 ", errw)
 				return

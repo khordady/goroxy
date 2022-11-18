@@ -134,20 +134,20 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer client_to_proxy.Close()
 
-	buffer := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, (32*1024)-4)
 
 	for {
-		length, errr := browser_to_client.Read(buffer)
+		length, errr := browser_to_client.Read(bufferReader)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from browser to client : " + strconv.Itoa(length))
 			//fmt.Println(string(buffer[:length]))
 
-			buffer = processToProxyBuffer(buffer, length)
-			fmt.Println(time.Now().Format(time.Stamp) + "Decode WRITE from client to proxy: " + strconv.Itoa(len(buffer)))
+			bufferWriter := processToProxyBuffer(bufferReader, length)
+			fmt.Println(time.Now().Format(time.Stamp) + "Decode WRITE from client to proxy: " + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 
-			writeLength, errw := client_to_proxy.Write(intTobytes(len(buffer)))
-			writeLength, errw = client_to_proxy.Write(buffer)
+			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
+			writeLength, errw = client_to_proxy.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR6 ", errw)
 				return
@@ -164,19 +164,19 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 
-	buffer := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, (32*1024)-4)
 
 	for {
-		total, errr := readBuffer(buffer, client_to_proxy)
+		total, errr := readBuffer(bufferReader, client_to_proxy)
 		if total > 0 {
 			fmt.Println(time.Now().Format(time.Stamp)+" Encoded READ from proxy to client: ", total)
 			//fmt.Println(string(buffer))
 
-			buffer = processToBrowserBuffer(buffer, total)
+			bufferWriter := processToBrowserBuffer(bufferReader, total)
 			fmt.Println(time.Now().Format(time.Stamp)+" Decoded WRITE from client to browser: ", total)
 			//fmt.Println(string(buffer))
 
-			write_length, errw := browser_to_client.Write(buffer)
+			write_length, errw := browser_to_client.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR8 ", errw)
 				return
