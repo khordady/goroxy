@@ -209,14 +209,14 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 }
 
 func readBuffer(buffer []byte, src net.Conn) (int, error) {
-	size := make([]byte, 2)
+	size := make([]byte, 4)
 
 	var total = 0
 	leng, err := src.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		for total < realSize {
-			length, errr := src.Read(buffer[total:])
+			length, errr := src.Read(buffer[total : realSize-total])
 			total = total + length
 
 			if errr != nil {
