@@ -152,8 +152,8 @@ func bytesToint(bytes []byte) int {
 }
 
 func copyArray(src []byte, dst []byte, offset int) {
-	for i, b := range src {
-		(dst)[i+offset] = b
+	for i := 0; i < len(src); i++ {
+		(dst)[i+offset] = src[i]
 	}
 }
 
