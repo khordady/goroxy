@@ -27,6 +27,8 @@ type strUser struct {
 
 var jjConfig strServerConfig
 
+var bufferSize = 32 * 1024
+
 func main() {
 	fmt.Println("Reading server-config.json")
 	readFile, err := os.Open("server-config.json")
@@ -110,9 +112,6 @@ func handleSocket(client_to_proxy net.Conn) {
 		//writer := bufio.NewWriter(client_to_proxy)
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 		switch jjConfig.ListenEncryption {
-		//case "Base64":
-		//	bytess = encodeBase64(bytess, len(bytess))
-		//	break
 
 		case "AES":
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
@@ -122,10 +121,6 @@ func handleSocket(client_to_proxy net.Conn) {
 		Writelength, err = client_to_proxy.Write(bytess)
 		fmt.Println("WROTED 200: ", Writelength)
 
-		//_, e = writer.Write([]byte("TEST MESSAGE FROM GITHUB"))
-		//_, e = writer.Write([]byte("HTTP/1.1 200 Connection Established\r\n"))
-		//_, e = writer.Write([]byte("\r\n"))
-		//err := writer.Flush()
 		if err != nil {
 			fmt.Println("ERROR42 ", err)
 			return
@@ -156,7 +151,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer proxy_to_host.Close()
 
 	//reader := bufio.NewReader(proxy_to_host)
-	bufferReader := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, (bufferSize)-4)
 
 	for {
 		length, err := proxy_to_host.Read(bufferReader)
@@ -164,7 +159,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			//fmt.Println(time.Now().Format(time.Stamp) + " READ from host to proxy:" + strconv.Itoa(length))
 			//fmt.Println(string(buffer[:length]))
 			bufferWriter := processToClientBuffer(bufferReader, length)
-			//fmt.Println(time.Now().Format(time.Stamp) + " Encoded Base64 WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
+			//fmt.Println(time.Now().Format(time.Stamp) + " Encoded WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 			_, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
@@ -187,7 +182,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
-	bufferReader := make([]byte, 32*1024)
+	bufferReader := make([]byte, bufferSize)
 
 	for {
 		length, errr := readBuffer(bufferReader, client_to_proxy)
@@ -217,6 +212,9 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
+	if leng <= 0 || leng > bufferSize {
+		return 0, fmt.Errorf("ERROR")
+	}
 	if leng > 0 {
 		realSize := bytesToint(size)
 		for total < realSize {

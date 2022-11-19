@@ -33,6 +33,8 @@ type strUser struct {
 
 var jjConfig strClientConfig
 
+var bufferSize = 32 * 1024
+
 func main() {
 	//a := []int{0, 1, 2, 3, 4, 5, 6}
 	//b := a[:4]
@@ -137,7 +139,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer client_to_proxy.Close()
 
-	bufferReader := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, bufferSize-4)
 
 	for {
 		length, errr := browser_to_client.Read(bufferReader)
@@ -167,7 +169,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 
-	bufferReader := make([]byte, 32*1024)
+	bufferReader := make([]byte, bufferSize)
 
 	for {
 		total, errr := readBuffer(bufferReader, client_to_proxy)
@@ -200,6 +202,9 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
+	if leng <= 0 || leng > bufferSize {
+		return 0, fmt.Errorf("ERROR")
+	}
 	if leng > 0 {
 		realSize := bytesToint(size)
 		for total < realSize {

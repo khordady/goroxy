@@ -5,13 +5,12 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"strings"
-	"time"
 )
 
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
-	start := time.Now()
+	//start := time.Now()
 	finalLength := length + 4
 	key_length := len(key)
 	plus := (length + 4) % key_length
@@ -38,13 +37,13 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], finalBytes[i:j])
 	}
-	elapsed := time.Since(start)
-	fmt.Println("Encryption elapsed ", elapsed.Milliseconds())
+	//elapsed := time.Since(start)
+	//fmt.Println("Encryption elapsed ", elapsed.Milliseconds())
 	return msgByte
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
-	start := time.Now()
+	//start := time.Now()
 	key_length := len(key)
 	var err error
 	if cc == nil {
@@ -69,28 +68,10 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	leng := bytesToint(msgByte[:4])
 	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
-	elapsed := time.Since(start)
-	fmt.Println("Decryption elapsed ", elapsed.Milliseconds())
+	//elapsed := time.Since(start)
+	//fmt.Println("Decryption elapsed ", elapsed.Milliseconds())
 	return decrypted_buffers
 }
-
-//func encodeBase64(buffer []byte, length int) []byte {
-//	lengt := base64.StdEncoding.EncodedLen(length)
-//	b64 := make([]byte, lengt)
-//	base64.StdEncoding.Encode(b64, buffer[:length])
-//
-//	return b64
-//}
-//
-//func decodeBase64(buffer []byte, length int) []byte {
-//	b64 := make([]byte, base64.StdEncoding.DecodedLen(length))
-//	n, err := base64.StdEncoding.Decode(b64, buffer[:length])
-//	if err != nil {
-//		fmt.Println(err)
-//		return nil
-//	}
-//	return b64[:n]
-//}
 
 func processReceived(buffer []byte, length int, authentication bool, users []strUser,
 	crypto string, crypto_key string) string {
@@ -98,10 +79,6 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 	case "None":
 		buffer = buffer[:length]
 		break
-
-	//case "Base64":
-	//	buffer = decodeBase64(buffer, length)
-	//	break
 
 	case "AES":
 		buffer = decryptAES(buffer, length, crypto_key)
@@ -172,9 +149,9 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.ListenEncryption {
-	//case "Base64":
-	//	buffer = decodeBase64(buffer, length)
-	//	break
+	case "None":
+		buffer = buffer[:length]
+		break
 
 	case "AES":
 		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
@@ -182,9 +159,9 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.SendEncryption {
-	//case "Base64":
-	//	buffer = encodeBase64(buffer, length)
-	//	break
+	case "None":
+		buffer = buffer[:length]
+		break
 
 	case "AES":
 		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
@@ -202,9 +179,10 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.SendEncryption {
-	//case "Base64":
-	//	buffer = decodeBase64(buffer, length)
-	//	break
+
+	case "None":
+		buffer = buffer[:length]
+		break
 
 	case "AES":
 		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
@@ -212,9 +190,9 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 	}
 
 	switch jjConfig.ListenEncryption {
-	//case "Base64":
-	//	buffer = encodeBase64(buffer, length)
-	//	break
+	case "None":
+		buffer = buffer[:length]
+		break
 
 	case "AES":
 		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
