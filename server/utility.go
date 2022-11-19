@@ -10,7 +10,7 @@ import (
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
-	finalLength := 0
+	finalLength := length + 4
 	key_length := len(key)
 	plus := (length + 4) % key_length
 	if plus > 0 {
