@@ -74,6 +74,9 @@ func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	length, err := readBuffer(buffer, client_to_proxy)
 
+	if length == 0 {
+		return
+	}
 	message := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if message == "" {

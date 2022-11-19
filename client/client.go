@@ -89,6 +89,10 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
+	if length == 0 {
+		return
+	}
+
 	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
 		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
 	if request == "" {
