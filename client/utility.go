@@ -5,11 +5,13 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"strings"
+	"time"
 )
 
 var cc cipher.Block
 
 func encryptAES(buffer []byte, length int, key string) []byte {
+	start := time.Now()
 	finalLength := length + 4
 	key_length := len(key)
 	plus := (length + 4) % key_length
@@ -36,10 +38,13 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
 		cc.Encrypt(msgByte[i:j], finalBytes[i:j])
 	}
+	elapsed := time.Since(start)
+	fmt.Println("Encryption elapsed ", elapsed.Milliseconds())
 	return msgByte
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
+	start := time.Now()
 	key_length := len(key)
 	var err error
 	if cc == nil {
@@ -64,6 +69,8 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	leng := bytesToint(msgByte[:4])
 	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
+	elapsed := time.Since(start)
+	fmt.Println("Decryption elapsed ", elapsed.Milliseconds())
 	return decrypted_buffers
 }
 
