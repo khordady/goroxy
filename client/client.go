@@ -164,7 +164,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 
-	bufferReader := make([]byte, (32*1024)-4)
+	bufferReader := make([]byte, 32*1024)
 
 	for {
 		total, errr := readBuffer(bufferReader, client_to_proxy)
