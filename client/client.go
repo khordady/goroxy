@@ -108,7 +108,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	//fmt.Println("Message is: " + request)
+	fmt.Println("Message is: " + request)
 
 	client_to_proxy, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
 	if e != nil {
@@ -120,14 +120,20 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		message = encryptAES(message, len(message), jjConfig.SendEncryptionKey)
 	}
 
-	_, err = client_to_proxy.Write(intTobytes(len(message)))
+	writer := bufio.NewWriter(client_to_proxy)
+	_, err = writer.Write(intTobytes(len(message)))
 	if err != nil {
 		fmt.Println("ERR31 ", e)
 		return
 	}
-	_, e = client_to_proxy.Write(message)
+	_, e = writer.Write(message)
 	if e != nil {
 		fmt.Println("ERR3 ", e)
+		return
+	}
+	err = writer.Flush()
+	if err != nil {
+		fmt.Println("ERR3 ", err)
 		return
 	}
 
@@ -153,7 +159,11 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			writeLength, errw = writer.Write(bufferWriter)
-			writer.Flush()
+			err := writer.Flush()
+			if err != nil {
+				fmt.Println("ERR6 ", errw)
+				return
+			}
 			if errw != nil {
 				fmt.Println("ERR6 ", errw)
 				return
@@ -210,7 +220,6 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 		realSize := bytesToint(size)
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
-			src.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
 			length, errr := src.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
 			total = total + length
