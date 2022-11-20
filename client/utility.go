@@ -16,8 +16,6 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	plus := (length + 4) % key_length
 	if plus > 0 {
 		finalLength = length + 4 + (key_length - plus)
-		plusBuffer := make([]byte, key_length-plus)
-		buffer = append(buffer, plusBuffer...)
 	}
 
 	finalBytes := make([]byte, finalLength)
@@ -116,10 +114,10 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 
 func intTobytes(size int) []byte {
 	bytes := make([]byte, 4)
-	bytes[0] = byte(0xff & size)
-	bytes[1] = byte(0xff & (size >> 8))
+	bytes[0] = byte(0xff & (size >> 32))
 	bytes[2] = byte(0xff & (size >> 16))
-	bytes[3] = byte(0xff & (size >> 32))
+	bytes[1] = byte(0xff & (size >> 8))
+	bytes[3] = byte(0xff & size)
 
 	return bytes
 }
@@ -127,7 +125,7 @@ func intTobytes(size int) []byte {
 func bytesToint(bytes []byte) int {
 	var result int
 	result = 0
-	for i := 3; i >= 0; i-- {
+	for i := 0; i < 4; i++ {
 		result = result << 8
 		result += int(bytes[i])
 	}
