@@ -108,7 +108,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	fmt.Println("Message is: " + request)
+	//fmt.Println("Message is: " + request)
 
 	client_to_proxy, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
 	if e != nil {
@@ -213,12 +213,12 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
-	if leng <= 0 || leng > bufferSize {
-		return 0, fmt.Errorf("ERROR")
-	}
 	if leng > 0 {
 		realSize := bytesToint(size)
 		fmt.Println("Real size is: ", realSize)
+		if realSize <= 0 || realSize > bufferSize {
+			return 0, fmt.Errorf("ERROR")
+		}
 		for total < realSize {
 			length, errr := src.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)

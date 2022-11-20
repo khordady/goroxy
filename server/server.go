@@ -120,7 +120,15 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		writer := bufio.NewWriter(client_to_proxy)
 		Writelength, err := writer.Write(intTobytes(len(bytess)))
+		if err != nil {
+			fmt.Println("ERROR42 ", err)
+			return
+		}
 		Writelength, err = writer.Write(bytess)
+		if err != nil {
+			fmt.Println("ERROR42 ", err)
+			return
+		}
 		err = writer.Flush()
 		if err != nil {
 			fmt.Println("ERROR42 ", err)
