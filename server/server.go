@@ -233,28 +233,37 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 
 func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	size := make([]byte, 4)
-
+	flag := false
+	var total = 0
+	var err error
+	var leng int
 	fmt.Println("started Reading")
 
-	var total = 0
-	src.SetReadDeadline(time.Now().Add(1 * time.Second))
-	leng, err := src.Read(size)
-	if leng > 0 {
-		realSize := bytesToint(size)
-		if realSize <= 0 || realSize > bufferSize {
-			return 0, fmt.Errorf("ERROR")
-		}
-		fmt.Println("Real size is: ", realSize)
-		for total < realSize {
-			src.SetReadDeadline(time.Now().Add(1 * time.Second))
-			length, errr := src.Read(buffer[total:realSize])
-			fmt.Println("Readed is: ", length)
-			total = total + length
-
-			if !os.IsTimeout(errr) && errr != nil {
-				fmt.Println("Total and error is: ", total, err)
-				return total, errr
+	for !flag {
+		src.SetReadDeadline(time.Now().Add(1 * time.Second))
+		leng, err = src.Read(size)
+		if leng > 0 {
+			realSize := bytesToint(size)
+			if realSize <= 0 || realSize > bufferSize {
+				return 0, fmt.Errorf("ERROR")
 			}
+			fmt.Println("Real size is: ", realSize)
+			for total < realSize {
+				src.SetReadDeadline(time.Now().Add(1 * time.Second))
+				length, errr := src.Read(buffer[total:realSize])
+				fmt.Println("Readed is: ", length)
+				total = total + length
+
+				if !os.IsTimeout(errr) && errr != nil {
+					fmt.Println("Total and error is: ", total, err)
+					return total, errr
+				}
+			}
+			flag = true
+		}
+		if !os.IsTimeout(err) && err != nil {
+			fmt.Println("Total and error is: ", total, err)
+			return total, err
 		}
 	}
 	fmt.Println("Total and error is: ", total, err)
