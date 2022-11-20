@@ -223,7 +223,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 			fmt.Println("Readed is: ", length)
 			total = total + length
 
-			if !os.IsTimeout(err) && errr != nil {
+			if !os.IsTimeout(errr) && errr != nil {
 				return total, errr
 			}
 		}
