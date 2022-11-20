@@ -172,7 +172,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp) + " READ from host to proxy:" + strconv.Itoa(length))
 			//fmt.Println(string(buffer[:length]))
 			bufferWriter := processToClientBuffer(bufferReader, length)
-			fmt.Println(time.Now().Format(time.Stamp) + " Encoded WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
+			//fmt.Println(time.Now().Format(time.Stamp) + " Encoded WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
@@ -184,7 +184,11 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 				fmt.Println("ERR4 ", errw)
 				return
 			}
-			writer.Flush()
+			errw = writer.Flush()
+			if errw != nil {
+				fmt.Println("ERR4 ", errw)
+				return
+			}
 			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to client:" + strconv.Itoa(writeLength))
 		}
 		if err != nil {
@@ -197,6 +201,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize)
+	writer := bufio.NewWriter(proxy_to_host)
 
 	for {
 		length, errr := readBuffer(bufferReader, client_to_proxy)
@@ -204,9 +209,14 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp) + " Read from host to proxy :" + strconv.Itoa(length))
 
 			bufferWriter := processToHostBuffer(bufferReader, length)
-			fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to host :" + strconv.Itoa(length))
+			//fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to host :" + strconv.Itoa(length))
 			//fmt.Println(string(buffer))
-			writeLength, errw := proxy_to_host.Write(bufferWriter)
+			writeLength, errw := writer.Write(bufferWriter)
+			if errw != nil {
+				fmt.Println("ERR5 ", errw)
+				return
+			}
+			errw = writer.Flush()
 			if errw != nil {
 				fmt.Println("ERR5 ", errw)
 				return
