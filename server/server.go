@@ -252,5 +252,6 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 			}
 		}
 	}
+	fmt.Println("Total and error is: ", total, err)
 	return total, err
 }
