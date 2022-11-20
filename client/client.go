@@ -150,13 +150,13 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp) + "Decode WRITE from client to proxy: " + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 
-			_, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
-			_, errw = client_to_proxy.Write(bufferWriter)
+			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
+			writeLength, errw = client_to_proxy.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR6 ", errw)
 				return
 			}
-			//fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
+			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from client to proxy: " + strconv.Itoa(writeLength))
 		}
 		if errr != nil {
 			fmt.Println("ERR6 ", errr)
@@ -180,13 +180,13 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp)+" Decoded WRITE from client to browser: ", total)
 			//fmt.Println(string(buffer))
 
-			_, errw := browser_to_client.Write(bufferWriter)
+			write_length, errw := browser_to_client.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR8 ", errw)
 				return
 			}
 
-			//fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
+			fmt.Println(time.Now().Format(time.Stamp)+" WRITE from client to browser: ", write_length)
 		}
 
 		if errr != nil {
