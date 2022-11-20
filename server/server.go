@@ -249,6 +249,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	fmt.Println("readed 4 byte int ", leng, size)
 	if leng > 0 {
 		realSize := bytesToint(size)
+		fmt.Println("after int is ", realSize)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf("ERROR")
 		}
