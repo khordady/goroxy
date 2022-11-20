@@ -73,7 +73,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		err = conn.SetReadDeadline(time.Time{})
+		//err = conn.SetReadDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -206,9 +206,10 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	}
 	if leng > 0 {
 		realSize := bytesToint(size)
-		fmt.Println(realSize)
+		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
 			length, errr := src.Read(buffer[total:realSize])
+			fmt.Println("Readed is: ", length)
 			total = total + length
 
 			if errr != nil {
