@@ -208,11 +208,12 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 		realSize := bytesToint(size)
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
+			src.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
 			length, errr := src.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
 			total = total + length
 
-			if errr != nil {
+			if !os.IsTimeout(err) && errr != nil {
 				return total, errr
 			}
 		}
