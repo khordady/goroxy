@@ -234,6 +234,8 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	size := make([]byte, 4)
 
+	fmt.Println("started Reading")
+
 	var total = 0
 	leng, err := src.Read(size)
 	if leng > 0 {
@@ -248,6 +250,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 			total = total + length
 
 			if errr != nil {
+				fmt.Println("Total and error is: ", total, err)
 				return total, errr
 			}
 		}
