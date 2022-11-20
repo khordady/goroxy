@@ -139,6 +139,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer client_to_proxy.Close()
 
 	bufferReader := make([]byte, bufferSize-4)
+	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
 		length, errr := browser_to_client.Read(bufferReader)
@@ -150,8 +151,9 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.Now().Format(time.Stamp) + "Decode WRITE from client to proxy: " + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 
-			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
-			writeLength, errw = client_to_proxy.Write(bufferWriter)
+			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
+			writeLength, errw = writer.Write(bufferWriter)
+			writer.Flush()
 			if errw != nil {
 				fmt.Println("ERR6 ", errw)
 				return
