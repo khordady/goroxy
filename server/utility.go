@@ -114,22 +114,25 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 }
 
 func intTobytes(size int) []byte {
+	fmt.Println("Int to array ", size)
 	bytes := make([]byte, 4)
 	bytes[0] = byte(0xff & (size >> 32))
 	bytes[2] = byte(0xff & (size >> 16))
 	bytes[1] = byte(0xff & (size >> 8))
 	bytes[3] = byte(0xff & size)
-
+	fmt.Println("Int to array is ", bytes)
 	return bytes
 }
 
 func bytesToint(bytes []byte) int {
+	fmt.Println("array to Int ", bytes)
 	var result int
 	result = 0
 	for i := 0; i < 4; i++ {
 		result = result << 8
 		result += int(bytes[i])
 	}
+	fmt.Println("array to Int is ", result)
 	return result
 }
 
