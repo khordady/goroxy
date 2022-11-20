@@ -74,7 +74,8 @@ func main() {
 
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
-	length, err := readBuffer(buffer, client_to_proxy)
+	reader := bufio.NewReader(client_to_proxy)
+	length, err := readBuffer(buffer, reader)
 
 	if length == 0 {
 		return
@@ -202,9 +203,10 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize)
 	writer := bufio.NewWriter(proxy_to_host)
+	reader := bufio.NewReader(client_to_proxy)
 
 	for {
-		length, errr := readBuffer(bufferReader, client_to_proxy)
+		length, errr := readBuffer(bufferReader, reader)
 		if length > 0 {
 			fmt.Println(time.Now().Format(time.Stamp) + " Read from host to proxy :" + strconv.Itoa(length))
 
@@ -231,39 +233,30 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	}
 }
 
-func readBuffer(buffer []byte, src net.Conn) (int, error) {
+func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	size := make([]byte, 4)
-	flag := false
-	var total = 0
-	var err error
-	var leng int
+
 	fmt.Println("started Reading")
 
-	for !flag {
-		src.SetReadDeadline(time.Now().Add(1 * time.Second))
-		leng, err = src.Read(size)
-		if leng > 0 {
-			realSize := bytesToint(size)
-			if realSize <= 0 || realSize > bufferSize {
-				return 0, fmt.Errorf("ERROR")
-			}
-			fmt.Println("Real size is: ", realSize)
-			for total < realSize {
-				src.SetReadDeadline(time.Now().Add(1 * time.Second))
-				length, errr := src.Read(buffer[total:realSize])
-				fmt.Println("Readed is: ", length)
-				total = total + length
-
-				if !os.IsTimeout(errr) && errr != nil {
-					fmt.Println("Total and error is: ", total, err)
-					return total, errr
-				}
-			}
-			flag = true
+	reader.Peek(1)
+	var total = 0
+	leng, err := reader.Read(size)
+	if leng > 0 {
+		realSize := bytesToint(size)
+		if realSize <= 0 || realSize > bufferSize {
+			return 0, fmt.Errorf("ERROR")
 		}
-		if !os.IsTimeout(err) && err != nil {
-			fmt.Println("Total and error is: ", total, err)
-			return total, err
+		fmt.Println("Real size is: ", realSize)
+		for total < realSize {
+			reader.Peek(1)
+			length, errr := reader.Read(buffer[total:realSize])
+			fmt.Println("Readed is: ", length)
+			total = total + length
+
+			if errr != nil {
+				fmt.Println("Total and error is: ", total, err)
+				return total, errr
+			}
 		}
 	}
 	fmt.Println("Total and error is: ", total, err)
