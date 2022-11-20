@@ -117,14 +117,16 @@ func handleSocket(client_to_proxy net.Conn) {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
 			break
 		}
-		Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
-		Writelength, err = client_to_proxy.Write(bytess)
-		fmt.Println("WROTED 200: ", Writelength)
 
+		writer := bufio.NewWriter(client_to_proxy)
+		Writelength, err := writer.Write(intTobytes(len(bytess)))
+		Writelength, err = writer.Write(bytess)
+		err = writer.Flush()
 		if err != nil {
 			fmt.Println("ERROR42 ", err)
 			return
 		}
+		fmt.Println("WROTED 200: ", Writelength)
 
 		go read(client_to_proxy, proxy_to_server)
 		write(client_to_proxy, proxy_to_server)
@@ -135,7 +137,10 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println("ERROR5 ", e)
 			return
 		}
-		Writelength, e := proxy_to_server.Write([]byte(message))
+
+		writer := bufio.NewWriter(proxy_to_server)
+		Writelength, e := writer.Write([]byte(message))
+		writer.Flush()
 		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 		if e != nil {
 			fmt.Println("ERROR6 ", e)
@@ -151,6 +156,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer proxy_to_host.Close()
 
 	bufferReader := make([]byte, (bufferSize)-4)
+	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
 		length, err := proxy_to_host.Read(bufferReader)
@@ -160,16 +166,17 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			bufferWriter := processToClientBuffer(bufferReader, length)
 			fmt.Println(time.Now().Format(time.Stamp) + " Encoded WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
-			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
+			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
 			}
-			writeLength, errw = client_to_proxy.Write(bufferWriter)
+			writeLength, errw = writer.Write(bufferWriter)
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
 				return
 			}
+			writer.Flush()
 			fmt.Println(time.Now().Format(time.Stamp) + " WRITE from proxy to client:" + strconv.Itoa(writeLength))
 		}
 		if err != nil {
@@ -211,11 +218,11 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 
 	var total = 0
 	leng, err := src.Read(size)
-	if leng <= 0 || leng > bufferSize {
-		return 0, fmt.Errorf("ERROR")
-	}
 	if leng > 0 {
 		realSize := bytesToint(size)
+		if realSize <= 0 || realSize > bufferSize {
+			return 0, fmt.Errorf("ERROR")
+		}
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
 			length, errr := src.Read(buffer[total:realSize])
