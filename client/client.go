@@ -140,8 +140,8 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	go write(client_to_proxy, writer, browser_to_client)
 	go read(client_to_proxy, browser_to_client)
 
-	browser_to_client.Close()
-	client_to_proxy.Close()
+	//browser_to_client.Close()
+	//client_to_proxy.Close()
 }
 
 func write(client_to_proxy net.Conn, writer *bufio.Writer, browser_to_client net.Conn) {
@@ -185,12 +185,12 @@ func write(client_to_proxy net.Conn, writer *bufio.Writer, browser_to_client net
 
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	writer := bufio.NewWriter(browser_to_client)
-	reader := bufio.NewReader(client_to_proxy)
+	//reader := bufio.NewReader(client_to_proxy)
 
 	for {
 		bufferReader := make([]byte, bufferSize)
 
-		total, errr := readBuffer(bufferReader, reader, client_to_proxy)
+		total, errr := readBuffer(bufferReader, client_to_proxy)
 		if total > 0 {
 			fmt.Println(time.StampMilli, " Encoded READ from proxy to client: ", total)
 			//fmt.Println(string(buffer))
@@ -220,28 +220,61 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	}
 }
 
-func readBuffer(buffer []byte, reader *bufio.Reader, src net.Conn) (int, error) {
+//	func readBuffer(buffer []byte, reader *bufio.Reader, src net.Conn) (int, error) {
+//		size := make([]byte, 4)
+//		var total = 0
+//
+//		fmt.Println("started Reading")
+//		for reader.Buffered() == 0 {
+//			fmt.Println("peaking 1")
+//			src.SetReadDeadline(time.Now().Add(2 * time.Second))
+//			peek, err := reader.Peek(1)
+//			if !os.IsTimeout(err) && err != nil {
+//				fmt.Println("ERR ", peek, err)
+//			}
+//			fmt.Println(peek)
+//		}
+//		leng, errr := reader.Read(size)
+//		if leng > 0 {
+//			realSize := bytesToint(size)
+//			if realSize <= 0 || realSize > bufferSize {
+//				return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
+//			}
+//			for total < realSize {
+//				length, errrr := reader.Read(buffer[total:realSize])
+//				fmt.Println("Readed is: ", length)
+//				total = total + length
+//
+//				if errrr != nil {
+//					fmt.Println("Total and error is: ", total, errrr)
+//					return total, errrr
+//				}
+//			}
+//		}
+//		if errr != nil {
+//			fmt.Println("Total and error is: ", total, errr)
+//			return total, errr
+//		}
+//		return total, errr
+//	}
+func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
-
+	var leng int
+	var errr error
 	fmt.Println("started Reading")
-	for reader.Buffered() == 0 {
-		fmt.Println("peaking 1")
-		src.SetReadDeadline(time.Now().Add(2 * time.Second))
-		peek, err := reader.Peek(1)
-		if !os.IsTimeout(err) && err != nil {
-			fmt.Println("ERR ", peek, err)
-		}
-		fmt.Println(peek)
+
+	for leng == 0 {
+		src.SetReadDeadline(time.Now().Add(1 * time.Second))
+		leng, errr = src.Read(size)
 	}
-	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
 		}
 		for total < realSize {
-			length, errrr := reader.Read(buffer[total:realSize])
+			length, errrr := src.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
 			total = total + length
 

@@ -121,12 +121,12 @@ func handleSocket(client_to_proxy net.Conn) {
 			break
 		}
 
-		Writelength, err := writer.Write(intTobytes(len(bytess)))
+		Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		Writelength, err = writer.Write(bytess)
+		Writelength, err = client_to_proxy.Write(bytess)
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
@@ -198,7 +198,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 			//}
 			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 			a := intTobytes(len(bufferWriter))
-			writeLength, errw := client_to_proxy.Write(encryptAES(a, len(a), jjConfig.ListenEncryptionKey))
+			writeLength, errw := client_to_proxy.Write(a)
 			if errw != nil {
 				fmt.Println(time.StampMilli, " ERROR4 ", errw)
 				return
