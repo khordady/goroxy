@@ -141,7 +141,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		fmt.Println("WROTED 200: ", Writelength)
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		write(client_to_proxy, proxy_to_server, writer)
+		go write(client_to_proxy, proxy_to_server, writer)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -164,7 +164,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		write(client_to_proxy, proxy_to_server, writer)
+		go write(client_to_proxy, proxy_to_server, writer)
 	}
 }
 

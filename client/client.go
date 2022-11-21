@@ -138,7 +138,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	go write(client_to_proxy, writer, browser_to_client)
-	read(client_to_proxy, browser_to_client)
+	go read(client_to_proxy, browser_to_client)
 
 	browser_to_client.Close()
 	client_to_proxy.Close()
@@ -227,7 +227,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader, src net.Conn) (int, error) 
 	fmt.Println("started Reading")
 	for reader.Buffered() == 0 {
 		fmt.Println("peaking 1")
-		src.SetReadDeadline(time.Now().Add(1 * time.Second))
+		src.SetReadDeadline(time.Now().Add(2 * time.Second))
 		peek, err := reader.Peek(1)
 		if !os.IsTimeout(err) && err != nil {
 			fmt.Println("ERR ", peek, err)

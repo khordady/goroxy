@@ -10,7 +10,7 @@
     }
   ],
   "Server": "185.221.237.166",
-  "ServerPort": "8181",
+  "ServerPort": "7373",
   "SendEncryption": "AES",
   "SendEncryptionKey": "SOMETHING 16 bit",
   "SendAuthentication": true,
