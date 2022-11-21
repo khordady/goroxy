@@ -168,7 +168,7 @@ func write(client_to_proxy net.Conn, writer *bufio.Writer, browser_to_client net
 				return
 			}
 			err := writer.Flush()
-			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+			//client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 			if err != nil {
 				fmt.Println("ERR6 ", errw)
 				return

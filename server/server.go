@@ -88,7 +88,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	//fmt.Println("MESSAGE IS: " + message)
+	fmt.Println("MESSAGE IS: " + message)
 
 	var host []string
 	headers := strings.Split(message, "\r\n")
@@ -132,7 +132,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 		err = writer.Flush()
-		client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+		//client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
