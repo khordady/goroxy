@@ -137,6 +137,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 		fmt.Println("WROTED 200: ", Writelength)
+		fmt.Println("WROTED 200 Buffered: ", writer.Buffered())
 
 		go read(client_to_proxy, proxy_to_server)
 		write(client_to_proxy, proxy_to_server)
