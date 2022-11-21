@@ -196,7 +196,9 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 			//	fmt.Println(time.StampMilli, " ERROR4 ", errw)
 			//	return
 			//}
-			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
+			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+			a := intTobytes(len(bufferWriter))
+			writeLength, errw := client_to_proxy.Write(encryptAES(a, len(a), jjConfig.ListenEncryptionKey))
 			if errw != nil {
 				fmt.Println(time.StampMilli, " ERROR4 ", errw)
 				return
@@ -206,8 +208,6 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 				fmt.Println(time.StampMilli, " ERROR4 ", errw)
 				return
 			}
-			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
-
 			fmt.Println(time.StampMilli, " WRITE from proxy to client:"+strconv.Itoa(writeLength))
 		}
 		if err != nil {
