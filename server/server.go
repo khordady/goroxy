@@ -75,7 +75,6 @@ func main() {
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
-	writer := bufio.NewWriter(client_to_proxy)
 
 	length, err := readBuffer(buffer, reader)
 
@@ -114,11 +113,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 		//writer := bufio.NewWriter(client_to_proxy)
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
-		switch jjConfig.ListenEncryption {
-
-		case "AES":
+		if jjConfig.ListenEncryption == "AES" {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
-			break
 		}
 
 		Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
@@ -131,7 +127,6 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		err = writer.Flush()
 		//client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 
 		if err != nil {
@@ -141,7 +136,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		fmt.Println("WROTED 200: ", Writelength)
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		go write(client_to_proxy, proxy_to_server, writer)
+		go write(client_to_proxy, proxy_to_server)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -164,11 +159,11 @@ func handleSocket(client_to_proxy net.Conn) {
 		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		go write(client_to_proxy, proxy_to_server, writer)
+		go write(client_to_proxy, proxy_to_server)
 	}
 }
 
-func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Writer) {
+func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer proxy_to_host.Close()
 
 	bufferReader := make([]byte, (bufferSize)-4)
