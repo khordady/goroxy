@@ -138,7 +138,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	go write(client_to_proxy, browser_to_client)
-	read(client_to_proxy, browser_to_client)
+	go read(client_to_proxy, browser_to_client)
 }
 
 func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
@@ -225,7 +225,6 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	var total = 0
 
 	fmt.Println("started Reading")
-	fmt.Println("Buffered is: ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		fmt.Println("leng > 0")

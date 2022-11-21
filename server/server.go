@@ -159,7 +159,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		go read(client_to_proxy, proxy_to_server)
-		write(client_to_proxy, proxy_to_server)
+		go write(client_to_proxy, proxy_to_server)
 	}
 }
 
@@ -240,7 +240,6 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	var total = 0
 
 	fmt.Println("started Reading")
-	fmt.Println("Buffered is: ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		fmt.Println("leng > 0")
