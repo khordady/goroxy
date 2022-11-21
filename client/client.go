@@ -185,10 +185,11 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	defer browser_to_client.Close()
 
 	bufferReader := make([]byte, bufferSize)
+	reader := bufio.NewReader(client_to_proxy)
 	writer := bufio.NewWriter(browser_to_client)
 
 	for {
-		total, errr := readBuffer(bufferReader, client_to_proxy)
+		total, errr := readBuffer(bufferReader, reader)
 		if total > 0 {
 			fmt.Println(time.Now().Format(time.Stamp)+" Encoded READ from proxy to client: ", total)
 			//fmt.Println(string(buffer))
@@ -218,26 +219,39 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	}
 }
 
-func readBuffer(buffer []byte, src net.Conn) (int, error) {
+func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	size := make([]byte, 4)
-
 	var total = 0
-	leng, err := src.Read(size)
+
+	fmt.Println("started Reading")
+
+	_, err := reader.Peek(1)
+	if err != nil {
+		fmt.Println("Total and error is: ", total, err)
+		return 0, err
+	}
+	fmt.Println("PEaked 1 byte ", reader.Buffered())
+	leng, err := reader.Read(size)
+	fmt.Println("readed 4 byte int ", leng, size)
 	if leng > 0 {
 		realSize := bytesToint(size)
-		fmt.Println("Real size is: ", realSize)
+		fmt.Println("after int is ", realSize)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf("ERROR")
 		}
+		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
-			length, errr := src.Read(buffer[total:realSize])
+			fmt.Println("PEaked 1 byte for date", reader.Buffered())
+			length, errr := reader.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
 			total = total + length
 
 			if errr != nil {
+				fmt.Println("Total and error is: ", total, err)
 				return total, errr
 			}
 		}
 	}
+	fmt.Println("Total and error is: ", total, err)
 	return total, err
 }
