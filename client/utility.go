@@ -159,7 +159,6 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 
 	switch jjConfig.SendEncryption {
 	case "None":
-		newBuffr = buffer[:length]
 		break
 
 	case "AES":
@@ -192,7 +191,6 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 
 	switch jjConfig.ListenEncryption {
 	case "None":
-		newBuffr = buffer[:length]
 		break
 
 	case "AES":

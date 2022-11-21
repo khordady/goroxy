@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -140,21 +139,23 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 
 	go write(client_to_proxy, writer, browser_to_client)
 	read(client_to_proxy, browser_to_client)
+
+	browser_to_client.Close()
+	client_to_proxy.Close()
 }
 
 func write(client_to_proxy net.Conn, writer *bufio.Writer, browser_to_client net.Conn) {
-	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize-4)
 
 	for {
 		length, errr := browser_to_client.Read(bufferReader)
 
 		if length > 0 {
-			fmt.Println(time.StampMilli, " READ from browser to client : "+strconv.Itoa(length))
+			fmt.Println(time.StampMilli, " READ from browser to client : ", length)
 			//fmt.Println(string(buffer[:length]))
 
 			bufferWriter := processToProxyBuffer(bufferReader, length)
-			fmt.Println(time.StampMilli, "Decode WRITE from client to proxy: "+strconv.Itoa(len(bufferWriter)))
+			fmt.Println(time.StampMilli, "Decode WRITE from client to proxy: ", len(bufferWriter))
 			//fmt.Println(string(buffer))
 
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
@@ -183,8 +184,6 @@ func write(client_to_proxy net.Conn, writer *bufio.Writer, browser_to_client net
 }
 
 func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
-	defer browser_to_client.Close()
-
 	writer := bufio.NewWriter(browser_to_client)
 	reader := bufio.NewReader(client_to_proxy)
 
@@ -228,12 +227,10 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	fmt.Println("started Reading")
 	leng, errr := reader.Read(size)
 	if leng > 0 {
-		fmt.Println("leng > 0")
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
 		}
-		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
 			length, errrr := reader.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
@@ -249,6 +246,5 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 		fmt.Println("Total and error is: ", total, errr)
 		return total, errr
 	}
-	fmt.Println("Total and error is: ", total, errr)
 	return total, errr
 }
