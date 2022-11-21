@@ -222,10 +222,13 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
+	var err error
 
 	fmt.Println("started Reading")
 
-	_, err := reader.Peek(1)
+	if reader.Buffered() == 0 {
+		_, err = reader.Peek(1)
+	}
 	fmt.Println("PEaked 1 byte ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
