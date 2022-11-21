@@ -75,6 +75,8 @@ func main() {
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
+	writer := bufio.NewWriter(client_to_proxy)
+
 	length, err := readBuffer(buffer, reader)
 
 	if length == 0 {
@@ -119,7 +121,6 @@ func handleSocket(client_to_proxy net.Conn) {
 			break
 		}
 
-		writer := bufio.NewWriter(client_to_proxy)
 		Writelength, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
@@ -139,8 +140,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 		fmt.Println("WROTED 200: ", Writelength)
 
-		go read(client_to_proxy, proxy_to_server)
-		write(client_to_proxy, proxy_to_server)
+		go read(client_to_proxy, proxy_to_server, reader, writer)
+		write(client_to_proxy, proxy_to_server, writer)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -149,25 +150,24 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		writer := bufio.NewWriter(proxy_to_server)
-		Writelength, e := writer.Write([]byte(message))
-		writer.Flush()
+		writer2 := bufio.NewWriter(proxy_to_server)
+		Writelength, e := writer2.Write([]byte(message))
+		writer2.Flush()
 		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 		if e != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", e)
 			return
 		}
 
-		go read(client_to_proxy, proxy_to_server)
-		go write(client_to_proxy, proxy_to_server)
+		go read(client_to_proxy, proxy_to_server, reader, writer)
+		go write(client_to_proxy, proxy_to_server, writer)
 	}
 }
 
-func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
+func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Writer) {
 	defer proxy_to_host.Close()
 
 	bufferReader := make([]byte, (bufferSize)-4)
-	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
 		length, err := proxy_to_host.Read(bufferReader)
@@ -201,11 +201,9 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	}
 }
 
-func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
+func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader, writer *bufio.Writer) {
 	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize)
-	reader := bufio.NewReader(client_to_proxy)
-	writer := bufio.NewWriter(proxy_to_host)
 
 	for {
 		length, errr := readBuffer(bufferReader, reader)
