@@ -119,7 +119,6 @@ func handleSocket(client_to_proxy net.Conn) {
 			break
 		}
 
-		client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 		writer := bufio.NewWriter(client_to_proxy)
 		Writelength, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
@@ -132,6 +131,8 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 		err = writer.Flush()
+		client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
