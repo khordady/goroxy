@@ -172,7 +172,8 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				fmt.Println("ERR6 ", errw)
 				return
 			}
-			fmt.Println(time.StampMilli, " WRITE from client to proxy: "+strconv.Itoa(writeLength))
+			fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writeLength)
+			fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writer.Buffered())
 		}
 		if errr != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", errr)
@@ -225,7 +226,6 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 
 	fmt.Println("started Reading")
 
-	fmt.Println("PEaked 1 byte ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)

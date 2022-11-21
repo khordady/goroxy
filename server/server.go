@@ -119,6 +119,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			break
 		}
 
+		client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 		writer := bufio.NewWriter(client_to_proxy)
 		Writelength, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
@@ -239,7 +240,6 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 
 	fmt.Println("started Reading")
 
-	fmt.Println("PEaked 1 byte ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
