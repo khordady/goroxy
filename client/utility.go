@@ -138,62 +138,66 @@ func copyArray(src []byte, dst []byte, offset int) {
 }
 
 func processToProxyBuffer(buffer []byte, length int) []byte {
+	var newBuffr []byte
 	if jjConfig.ListenEncryption == jjConfig.SendEncryption {
 		if (jjConfig.SendEncryptionKey == jjConfig.ListenEncryptionKey && jjConfig.SendEncryption == "AES") ||
 			jjConfig.ListenEncryption == "None" {
-			return buffer
+			newBuffr = buffer[:length]
+			return newBuffr
 		}
 	}
 
 	switch jjConfig.ListenEncryption {
 	case "None":
-		buffer = buffer[:length]
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
 
 	switch jjConfig.SendEncryption {
 	case "None":
-		buffer = buffer[:length]
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey)
 		break
 	}
-	return buffer
+	return newBuffr
 }
 
 func processToBrowserBuffer(buffer []byte, length int) []byte {
+	var newBuffr []byte
 	if jjConfig.ListenEncryption == jjConfig.SendEncryption {
 		if (jjConfig.SendEncryptionKey == jjConfig.ListenEncryptionKey && jjConfig.SendEncryption == "AES") ||
 			jjConfig.ListenEncryption == "None" {
-			return buffer
+			newBuffr = buffer[:length]
+			return newBuffr
 		}
 	}
 
 	switch jjConfig.SendEncryption {
 
 	case "None":
-		buffer = buffer[:length]
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
 
 	switch jjConfig.ListenEncryption {
 	case "None":
-		buffer = buffer[:length]
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = encryptAES(buffer, length, jjConfig.SendEncryptionKey)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey)
 		break
 	}
-	return buffer
+	return newBuffr
 }

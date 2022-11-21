@@ -160,7 +160,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		go write(client_to_proxy, proxy_to_server, writer)
+		write(client_to_proxy, proxy_to_server, writer)
 	}
 }
 

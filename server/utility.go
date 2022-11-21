@@ -139,26 +139,29 @@ func copyArray(src []byte, dst []byte, offset int) {
 }
 
 func processToHostBuffer(buffer []byte, length int) []byte {
+	var newBuffr []byte
 	switch jjConfig.ListenEncryption {
 	case "None":
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
-	return buffer
+	return newBuffr
 }
 
 func processToClientBuffer(buffer []byte, length int) []byte {
+	var newBuffr []byte
 	switch jjConfig.ListenEncryption {
 	case "None":
-		buffer = buffer[:length]
+		newBuffr = buffer[:length]
 		break
 
 	case "AES":
-		buffer = encryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = encryptAES(buffer, length, jjConfig.ListenEncryptionKey)
 		break
 	}
-	return buffer
+	return newBuffr
 }
