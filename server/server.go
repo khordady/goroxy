@@ -140,7 +140,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 		fmt.Println("WROTED 200: ", Writelength)
 
-		go read(client_to_proxy, proxy_to_server, reader, writer)
+		go read(client_to_proxy, proxy_to_server, reader)
 		write(client_to_proxy, proxy_to_server, writer)
 
 	} else {
@@ -159,7 +159,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		go read(client_to_proxy, proxy_to_server, reader, writer)
+		go read(client_to_proxy, proxy_to_server, reader)
 		go write(client_to_proxy, proxy_to_server, writer)
 	}
 }
@@ -201,9 +201,10 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 	}
 }
 
-func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader, writer *bufio.Writer) {
+func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader) {
 	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize)
+	writer := bufio.NewWriter(proxy_to_host)
 
 	for {
 		length, errr := readBuffer(bufferReader, reader)
