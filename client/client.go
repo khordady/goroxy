@@ -226,6 +226,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	fmt.Println("started Reading")
 
 	_, err := reader.Peek(1)
+	fmt.Println("Buffered is: ", reader.Buffered())
 	if err != nil {
 		fmt.Println("Total and error is: ", total, err)
 		return 0, err
