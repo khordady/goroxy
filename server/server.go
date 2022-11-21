@@ -181,6 +181,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 			bufferWriter := processToClientBuffer(bufferReader, length)
 			fmt.Println(time.StampMilli, " Encoded WRITE from proxy to client:", len(bufferWriter))
 			//fmt.Println(string(buffer))
+			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
 				fmt.Println(time.StampMilli, " ERROR4 ", errw)
@@ -196,6 +197,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 				fmt.Println(time.StampMilli, " ERROR4 ", errw)
 				return
 			}
+
 			fmt.Println(time.StampMilli, " WRITE from proxy to client:"+strconv.Itoa(writeLength))
 		}
 		if err != nil {

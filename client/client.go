@@ -190,7 +190,7 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	for {
 		bufferReader := make([]byte, bufferSize)
 
-		total, errr := readBuffer(bufferReader, reader)
+		total, errr := readBuffer(bufferReader, reader, client_to_proxy)
 		if total > 0 {
 			fmt.Println(time.StampMilli, " Encoded READ from proxy to client: ", total)
 			//fmt.Println(string(buffer))
@@ -220,11 +220,20 @@ func read(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	}
 }
 
-func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
+func readBuffer(buffer []byte, reader *bufio.Reader, src net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
 
 	fmt.Println("started Reading")
+	for reader.Buffered() == 0 {
+		fmt.Println("peaking 1")
+		src.SetReadDeadline(time.Now().Add(1 * time.Second))
+		peek, err := reader.Peek(1)
+		if !os.IsTimeout(err) && err != nil {
+			fmt.Println("ERR ", peek, err)
+		}
+		fmt.Println(peek)
+	}
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
