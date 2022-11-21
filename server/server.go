@@ -111,18 +111,23 @@ func handleSocket(client_to_proxy net.Conn) {
 		if err != nil {
 			return
 		}
-		//writer := bufio.NewWriter(client_to_proxy)
+		writer := bufio.NewWriter(client_to_proxy)
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 		if jjConfig.ListenEncryption == "AES" {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
 		}
 
-		Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
+		Writelength, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		Writelength, err = client_to_proxy.Write(bytess)
+		Writelength, err = writer.Write(bytess)
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		err = writer.Flush()
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return

@@ -138,7 +138,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	go write(client_to_proxy, writer, browser_to_client)
-	go read(client_to_proxy, browser_to_client)
+	read(client_to_proxy, browser_to_client)
 
 	//browser_to_client.Close()
 	//client_to_proxy.Close()
@@ -267,8 +267,13 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	for leng == 0 {
 		src.SetReadDeadline(time.Now().Add(1 * time.Second))
 		leng, errr = src.Read(size)
+		fmt.Println("LENG is: ", leng)
+		if !os.IsTimeout(errr) && errr != nil {
+			fmt.Println("ERRROR IS: ", errr)
+		}
 	}
 	if leng > 0 {
+		fmt.Println("LENG > 0 ", leng)
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
