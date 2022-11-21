@@ -241,7 +241,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 
 	_, err := reader.Peek(1)
 	fmt.Println("PEaked 1 byte ", reader.Buffered())
-	leng, err := reader.Read(size)
+	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
@@ -249,15 +249,19 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 		}
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
-			length, errr := reader.Read(buffer[total:realSize])
+			length, errrr := reader.Read(buffer[total:realSize])
 			fmt.Println("Readed is: ", length)
 			total = total + length
 
-			if errr != nil {
-				fmt.Println("Total and error is: ", total, err)
-				return total, errr
+			if errrr != nil {
+				fmt.Println("Total and error is: ", total, errrr)
+				return total, errrr
 			}
 		}
+	}
+	if errr != nil {
+		fmt.Println("Total and error is: ", total, errr)
+		return total, errr
 	}
 	fmt.Println("Total and error is: ", total, err)
 	return total, err
