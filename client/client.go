@@ -230,7 +230,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 		fmt.Println("leng > 0")
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
-			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE")
+			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
 		}
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
