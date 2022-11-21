@@ -181,22 +181,32 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn, writer *bufio.Write
 			bufferWriter := processToClientBuffer(bufferReader, length)
 			fmt.Println(time.StampMilli, " Encoded WRITE from proxy to client:", len(bufferWriter))
 			//fmt.Println(string(buffer))
+			//writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
+			//if errw != nil {
+			//	fmt.Println(time.StampMilli, " ERROR4 ", errw)
+			//	return
+			//}
+			//writeLength, errw = writer.Write(bufferWriter)
+			//if errw != nil {
+			//	fmt.Println(time.StampMilli, " ERROR4 ", errw)
+			//	return
+			//}
+			//errw = writer.Flush()
+			//if errw != nil {
+			//	fmt.Println(time.StampMilli, " ERROR4 ", errw)
+			//	return
+			//}
+			writeLength, errw := client_to_proxy.Write(intTobytes(len(bufferWriter)))
+			if errw != nil {
+				fmt.Println(time.StampMilli, " ERROR4 ", errw)
+				return
+			}
+			writeLength, errw = client_to_proxy.Write(bufferWriter)
+			if errw != nil {
+				fmt.Println(time.StampMilli, " ERROR4 ", errw)
+				return
+			}
 			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
-			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
-			if errw != nil {
-				fmt.Println(time.StampMilli, " ERROR4 ", errw)
-				return
-			}
-			writeLength, errw = writer.Write(bufferWriter)
-			if errw != nil {
-				fmt.Println(time.StampMilli, " ERROR4 ", errw)
-				return
-			}
-			errw = writer.Flush()
-			if errw != nil {
-				fmt.Println(time.StampMilli, " ERROR4 ", errw)
-				return
-			}
 
 			fmt.Println(time.StampMilli, " WRITE from proxy to client:"+strconv.Itoa(writeLength))
 		}
