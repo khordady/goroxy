@@ -137,7 +137,6 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 		fmt.Println("WROTED 200: ", Writelength)
-		fmt.Println("WROTED 200 Buffered: ", writer.Buffered())
 
 		go read(client_to_proxy, proxy_to_server)
 		write(client_to_proxy, proxy_to_server)
@@ -243,6 +242,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 
 	leng, errr := reader.Read(size)
 	if leng > 0 {
+		fmt.Println("leng > 0")
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE")
