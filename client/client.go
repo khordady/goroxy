@@ -174,7 +174,6 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				return
 			}
 			fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writeLength)
-			fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writer.Buffered())
 		}
 		if errr != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", errr)
@@ -226,7 +225,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	var total = 0
 
 	fmt.Println("started Reading")
-
+	fmt.Println("Buffered is: ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		fmt.Println("leng > 0")

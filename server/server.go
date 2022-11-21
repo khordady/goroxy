@@ -239,7 +239,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	var total = 0
 
 	fmt.Println("started Reading")
-
+	fmt.Println("Buffered is: ", reader.Buffered())
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		fmt.Println("leng > 0")
