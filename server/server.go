@@ -175,6 +175,7 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 			bufferWriter := processToClientBuffer(bufferReader, length)
 			//fmt.Println(time.Now().Format(time.Stamp) + " Encoded WRITE from proxy to client:" + strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
+			fmt.Println("Array length is: ", intTobytes(len(bufferWriter)))
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
 				fmt.Println("ERR4 ", errw)
@@ -202,13 +203,13 @@ func write(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 func read(client_to_proxy net.Conn, proxy_to_host net.Conn) {
 	defer client_to_proxy.Close()
 	bufferReader := make([]byte, bufferSize)
-	writer := bufio.NewWriter(proxy_to_host)
 	reader := bufio.NewReader(client_to_proxy)
+	writer := bufio.NewWriter(proxy_to_host)
 
 	for {
 		length, errr := readBuffer(bufferReader, reader)
 		if length > 0 {
-			fmt.Println(time.Now().Format(time.Stamp) + " Read from host to proxy :" + strconv.Itoa(length))
+			fmt.Println(time.Now().Format(time.Stamp) + " Read from client to proxy :" + strconv.Itoa(length))
 
 			bufferWriter := processToHostBuffer(bufferReader, length)
 			//fmt.Println(time.Now().Format(time.Stamp) + "Decoded WRITE from proxy to host :" + strconv.Itoa(length))
