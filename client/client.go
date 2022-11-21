@@ -157,6 +157,7 @@ func write(client_to_proxy net.Conn, browser_to_client net.Conn) {
 			fmt.Println(time.StampMilli, "Decode WRITE from client to proxy: "+strconv.Itoa(len(bufferWriter)))
 			//fmt.Println(string(buffer))
 
+			client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
 				fmt.Println("ERR6 ", errw)
