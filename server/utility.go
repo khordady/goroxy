@@ -117,8 +117,8 @@ func intTobytes(size int) []byte {
 	fmt.Println("Int to array ", size)
 	bytes := make([]byte, 4)
 	bytes[0] = byte(0xff & (size >> 32))
-	bytes[2] = byte(0xff & (size >> 16))
-	bytes[1] = byte(0xff & (size >> 8))
+	bytes[1] = byte(0xff & (size >> 16))
+	bytes[2] = byte(0xff & (size >> 8))
 	bytes[3] = byte(0xff & size)
 	fmt.Println("Int to array is ", bytes)
 	return bytes
