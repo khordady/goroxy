@@ -226,7 +226,6 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	fmt.Println("started Reading")
 
 	_, err := reader.Peek(1)
-	fmt.Println("Buffered is: ", reader.Buffered())
 	if err != nil {
 		fmt.Println("Total and error is: ", total, err)
 		return 0, err
@@ -236,9 +235,8 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	fmt.Println("readed 4 byte int ", leng, size)
 	if leng > 0 {
 		realSize := bytesToint(size)
-		fmt.Println("after int is ", realSize)
 		if realSize <= 0 || realSize > bufferSize {
-			return 0, fmt.Errorf("ERROR")
+			return 0, fmt.Errorf("ERROR OVER SIZE")
 		}
 		fmt.Println("Real size is: ", realSize)
 		for total < realSize {
