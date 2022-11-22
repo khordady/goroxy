@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"time"
 )
 
 var bufferSize = 32 * 1024
 
 func main() {
-	client_to_proxy, e := net.Dial("tcp", "185.221.237.166:7070")
+	client_to_proxy, e := net.Dial("tcp", "192.168.1.102:7070")
 	if e != nil {
 		fmt.Println("ERR2 ", e)
 		return
@@ -49,7 +48,6 @@ func readBuffer2(buffer []byte, src net.Conn) (int, error) {
 	fmt.Println("started Reading")
 
 	for leng == 0 {
-		src.SetReadDeadline(time.Now().Add(1 * time.Second))
 		leng, errr = src.Read(size)
 		fmt.Println("LENG is: ", leng)
 		if !os.IsTimeout(errr) && errr != nil {

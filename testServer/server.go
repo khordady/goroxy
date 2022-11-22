@@ -28,6 +28,8 @@ func handleSocket(client_to_proxy net.Conn) {
 	length, _ := readBuffer(buffer, reader)
 	fmt.Println(length)
 
+	fmt.Println(string(buffer))
+
 	writer := bufio.NewWriter(client_to_proxy)
 
 	for {
