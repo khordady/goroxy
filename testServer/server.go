@@ -11,14 +11,17 @@ var bufferSize = 32 * 1024
 
 func main() {
 	con, err := net.Dial("udp", "debian:7")
+	fmt.Println(err)
 
-	defer con.Close()
+	//defer con.Close()
 
 	_, err = con.Write([]byte("HI THIS IS TEST"))
+	fmt.Println(err)
 
 	reply := make([]byte, 1024)
 
 	_, err = con.Read(reply)
+	fmt.Println(err)
 
 	fmt.Println(err)
 
