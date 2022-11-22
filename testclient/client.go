@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"os"
+	"time"
 )
 
 var bufferSize = 32 * 1024
@@ -48,9 +48,10 @@ func readBuffer2(buffer []byte, src net.Conn) (int, error) {
 	fmt.Println("started Reading")
 
 	//for leng == 0 {
+	src.SetReadDeadline(time.Now().Add(3 * time.Second))
 	leng, errr = src.Read(size)
 	fmt.Println("LENG is: ", leng)
-	if !os.IsTimeout(errr) && errr != nil {
+	if errr != nil {
 		fmt.Println("ERRROR IS: ", errr)
 	}
 	//}

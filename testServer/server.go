@@ -41,12 +41,12 @@ func handleSocket(client_to_proxy net.Conn) {
 	bytess := []byte("This is TEST")
 	fmt.Println(intTobytes(len(bytess)))
 
-	Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
+	//Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	Writelength, err = client_to_proxy.Write(bytess)
+	Writelength, err := client_to_proxy.Write(bytess)
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
