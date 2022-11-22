@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	message := []byte("HI this is test")
+	message := []byte("HI this is testServer")
 
 	writer := bufio.NewWriter(client_to_proxy)
 	_, err := writer.Write(intTobytes(len(message)))
