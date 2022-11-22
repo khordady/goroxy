@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var bufferSize = 32 * 1024
+
 func main() {
 	ln, err := net.Listen("tcp", ":7070")
 	conn, _ := ln.Accept()
@@ -18,6 +20,7 @@ func main() {
 	fmt.Println("Connection Received")
 	go handleSocket(conn)
 }
+
 func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
