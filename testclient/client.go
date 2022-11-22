@@ -60,7 +60,7 @@ func readBuffer2(buffer []byte, src net.Conn) (int, error) {
 		fmt.Println("LENG > 0 ", leng)
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
-			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
+			return 0, errr
 		}
 		for total < realSize {
 			length, errrr := src.Read(buffer[total:realSize])

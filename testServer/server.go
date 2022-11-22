@@ -25,34 +25,37 @@ func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
 
-	length, err := readBuffer(buffer, reader)
+	length, _ := readBuffer(buffer, reader)
 	fmt.Println(length)
 
 	writer := bufio.NewWriter(client_to_proxy)
-	bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
-	Writelength, err := writer.Write(intTobytes(len(bytess)))
-	if err != nil {
-		fmt.Println(time.StampMilli, " ERROR42 ", err)
-		return
-	}
-	Writelength, err = writer.Write(bytess)
-	if err != nil {
-		fmt.Println(time.StampMilli, " ERROR42 ", err)
-		return
-	}
-	err = writer.Flush()
-	if err != nil {
-		fmt.Println(time.StampMilli, " ERROR42 ", err)
-		return
-	}
-	//client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+	for {
+		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
-	if err != nil {
-		fmt.Println(time.StampMilli, " ERROR42 ", err)
-		return
+		Writelength, err := writer.Write(intTobytes(len(bytess)))
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		Writelength, err = writer.Write(bytess)
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		err = writer.Flush()
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		//client_to_proxy.SetWriteDeadline(time.Now().Add(1 * time.Second))
+
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		fmt.Println("WROTED 200: ", Writelength)
 	}
-	fmt.Println("WROTED 200: ", Writelength)
 }
 
 func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
