@@ -10,32 +10,15 @@ import (
 var bufferSize = 32 * 1024
 
 func main() {
-	con, err := net.Dial("udp", "debian:7")
-	fmt.Println(err)
-
-	//defer con.Close()
-
-	_, err = con.Write([]byte("HI THIS IS TEST"))
-	fmt.Println(err)
-
-	reply := make([]byte, 1024)
-
-	_, err = con.Read(reply)
-	fmt.Println(err)
-
-	fmt.Println(err)
-
-	fmt.Println("reply:", string(reply))
-
-	//ln, err := net.Listen("tcp", ":7070")
-	//conn, _ := ln.Accept()
-	////err = conn.SetDeadline(time.Time{})
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//fmt.Println("Connection Received")
-	//handleSocket(conn)
+	ln, err := net.Listen("tcp", ":7070")
+	conn, _ := ln.Accept()
+	//err = conn.SetDeadline(time.Time{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Connection Received")
+	handleSocket(conn)
 }
 
 func handleSocket(client_to_proxy net.Conn) {
@@ -52,22 +35,22 @@ func handleSocket(client_to_proxy net.Conn) {
 
 	fmt.Println(string(buffer))
 
-	writer := bufio.NewWriter(client_to_proxy)
+	//writer := bufio.NewWriter(client_to_proxy)
 
 	bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 	fmt.Println(intTobytes(len(bytess)))
 
-	Writelength, err := writer.Write(intTobytes(len(bytess)))
+	Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	Writelength, err = writer.Write(bytess)
+	Writelength, err = client_to_proxy.Write(bytess)
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	err = writer.Flush()
+	//err = writer.Flush()
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
@@ -79,6 +62,8 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 	fmt.Println("WROTED 200: ", Writelength)
+
+	client_to_proxy.Close()
 }
 
 func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
