@@ -11,6 +11,10 @@ var bufferSize = 32 * 1024
 
 func main() {
 	client_to_proxy, e := net.Dial("tcp", "185.221.237.166:7070")
+
+	fmt.Println(client_to_proxy.LocalAddr().String())
+	fmt.Println(client_to_proxy.RemoteAddr().String())
+
 	if e != nil {
 		fmt.Println("ERR2 ", e)
 		return

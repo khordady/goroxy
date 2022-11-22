@@ -13,6 +13,8 @@ func main() {
 	ln, err := net.Listen("tcp", "185.221.237.166:7070")
 
 	client_to_proxy, _ := ln.Accept()
+	fmt.Println(client_to_proxy.LocalAddr().String())
+	fmt.Println(client_to_proxy.RemoteAddr().String())
 	//err = conn.SetDeadline(time.Time{})
 	if err != nil {
 		fmt.Println(err)
