@@ -10,7 +10,7 @@ import (
 var bufferSize = 32 * 1024
 
 func main() {
-	client_to_proxy, e := net.Dial("tcp", "192.168.1.102:7070")
+	client_to_proxy, e := net.Dial("tcp", "185.221.237.166:2000")
 	if e != nil {
 		fmt.Println("ERR2 ", e)
 		return
@@ -37,7 +37,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(length)
+	fmt.Println(string(bufferReader[:length]))
 }
 
 func readBuffer2(buffer []byte, src net.Conn) (int, error) {
