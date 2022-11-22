@@ -37,7 +37,8 @@ func handleSocket(client_to_proxy net.Conn) {
 
 	//writer := bufio.NewWriter(client_to_proxy)
 
-	bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
+	//bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
+	bytess := []byte("This is TEST")
 	fmt.Println(intTobytes(len(bytess)))
 
 	Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
