@@ -18,7 +18,7 @@ func main() {
 		return
 	}
 	fmt.Println("Connection Received")
-	go handleSocket(conn)
+	handleSocket(conn)
 }
 
 func handleSocket(client_to_proxy net.Conn) {
