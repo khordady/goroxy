@@ -10,7 +10,7 @@ import (
 var bufferSize = 32 * 1024
 
 func main() {
-	client_to_proxy, e := net.Dial("tcp", "185.221.237.166:2000")
+	client_to_proxy, e := net.Dial("tcp", "185.221.237.166:7070")
 	if e != nil {
 		fmt.Println("ERR2 ", e)
 		return

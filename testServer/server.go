@@ -10,15 +10,29 @@ import (
 var bufferSize = 32 * 1024
 
 func main() {
-	ln, err := net.Listen("tcp", ":7070")
-	conn, _ := ln.Accept()
-	//err = conn.SetDeadline(time.Time{})
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Connection Received")
-	handleSocket(conn)
+	con, err := net.Dial("udp", "debian:7")
+
+	defer con.Close()
+
+	_, err = con.Write([]byte("HI THIS IS TEST"))
+
+	reply := make([]byte, 1024)
+
+	_, err = con.Read(reply)
+
+	fmt.Println(err)
+
+	fmt.Println("reply:", string(reply))
+
+	//ln, err := net.Listen("tcp", ":7070")
+	//conn, _ := ln.Accept()
+	////err = conn.SetDeadline(time.Time{})
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//fmt.Println("Connection Received")
+	//handleSocket(conn)
 }
 
 func handleSocket(client_to_proxy net.Conn) {
