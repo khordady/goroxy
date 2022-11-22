@@ -11,17 +11,14 @@ var bufferSize = 32 * 1024
 
 func main() {
 	ln, err := net.Listen("tcp", ":7070")
-	conn, _ := ln.Accept()
+
+	client_to_proxy, _ := ln.Accept()
 	//err = conn.SetDeadline(time.Time{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println("Connection Received")
-	handleSocket(conn)
-}
-
-func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	//reader := bufio.NewReader(client_to_proxy)
 
@@ -41,12 +38,12 @@ func handleSocket(client_to_proxy net.Conn) {
 	bytess := []byte("This is TEST")
 	fmt.Println(intTobytes(len(bytess)))
 
-	//Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
+	Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	Writelength, err := client_to_proxy.Write(bytess)
+	Writelength, err = client_to_proxy.Write(bytess)
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
@@ -64,7 +61,11 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 	fmt.Println("WROTED 200: ", Writelength)
 
-	client_to_proxy.Close()
+	err = client_to_proxy.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
