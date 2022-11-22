@@ -32,7 +32,8 @@ func main() {
 	err = writer.Flush()
 
 	bufferReader := make([]byte, bufferSize)
-	length, err := readBuffer2(bufferReader, client_to_proxy)
+	length, err := client_to_proxy.Read(bufferReader[:4])
+	//length, err := readBuffer2(bufferReader, client_to_proxy)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -48,7 +49,7 @@ func readBuffer2(buffer []byte, src net.Conn) (int, error) {
 	fmt.Println("started Reading")
 
 	//for leng == 0 {
-	src.SetReadDeadline(time.Now().Add(3 * time.Second))
+	src.SetReadDeadline(time.Now().Add(5 * time.Second))
 	leng, errr = src.Read(size)
 	fmt.Println("LENG is: ", leng)
 	if errr != nil {

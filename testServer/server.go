@@ -10,7 +10,7 @@ import (
 var bufferSize = 32 * 1024
 
 func main() {
-	ln, err := net.Listen("tcp", ":7070")
+	ln, err := net.Listen("tcp", "185.221.237.166:7070")
 
 	client_to_proxy, _ := ln.Accept()
 	//err = conn.SetDeadline(time.Time{})
@@ -38,12 +38,12 @@ func main() {
 	bytess := []byte("This is TEST")
 	fmt.Println(intTobytes(len(bytess)))
 
-	Writelength, err := client_to_proxy.Write(intTobytes(len(bytess)))
+	_, err = client_to_proxy.Write(intTobytes(len(bytess)))
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	Writelength, err = client_to_proxy.Write(bytess)
+	_, err = client_to_proxy.Write(bytess)
 	if err != nil {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
@@ -59,7 +59,7 @@ func main() {
 		fmt.Println(time.StampMilli, " ERROR42 ", err)
 		return
 	}
-	fmt.Println("WROTED 200: ", Writelength)
+	//fmt.Println("WROTED 200: ", Writelength)
 
 	err = client_to_proxy.Close()
 	if err != nil {
