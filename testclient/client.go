@@ -47,13 +47,13 @@ func readBuffer2(buffer []byte, src net.Conn) (int, error) {
 	var errr error
 	fmt.Println("started Reading")
 
-	for leng == 0 {
-		leng, errr = src.Read(size)
-		fmt.Println("LENG is: ", leng)
-		if !os.IsTimeout(errr) && errr != nil {
-			fmt.Println("ERRROR IS: ", errr)
-		}
+	//for leng == 0 {
+	leng, errr = src.Read(size)
+	fmt.Println("LENG is: ", leng)
+	if !os.IsTimeout(errr) && errr != nil {
+		fmt.Println("ERRROR IS: ", errr)
 	}
+	//}
 	if leng > 0 {
 		fmt.Println("LENG > 0 ", leng)
 		realSize := bytesToint(size)
