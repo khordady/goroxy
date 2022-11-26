@@ -1,4 +1,5 @@
 {
+  "WriteServerFirst": true,
   "ListenPort": "7373",
   "ListenEncryption": "AES",
   "ListenEncryptionKey": "SOMETHING 16 bit",

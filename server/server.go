@@ -13,6 +13,7 @@ import (
 )
 
 type strServerConfig struct {
+	WriteServerFirst     bool
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
@@ -73,6 +74,29 @@ func main() {
 }
 
 func handleSocket(client_to_proxy net.Conn) {
+	writer := bufio.NewWriter(client_to_proxy)
+
+	if jjConfig.WriteServerFirst {
+		message := []byte("HI THIS IS TEST")
+		if jjConfig.ListenEncryption == "AES" {
+			message = encryptAES(message, len(message), jjConfig.ListenEncryptionKey)
+		}
+		_, err := writer.Write(intTobytes(len(message)))
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		_, err = writer.Write(message)
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+		err = writer.Flush()
+		if err != nil {
+			fmt.Println(time.StampMilli, " ERROR42 ", err)
+			return
+		}
+	}
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
 
@@ -87,7 +111,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	fmt.Println("MESSAGE IS: " + message)
+	//fmt.Println("MESSAGE IS: " + message)
 
 	var host []string
 	headers := strings.Split(message, "\r\n")
@@ -105,24 +129,23 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		fmt.Println("CONNECTED TO: " + host[1])
+		//fmt.Println("CONNECTED TO: " + host[1])
 
 		//length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		if err != nil {
 			return
 		}
-		writer := bufio.NewWriter(client_to_proxy)
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 		if jjConfig.ListenEncryption == "AES" {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
 		}
 
-		Writelength, err := writer.Write(intTobytes(len(bytess)))
+		_, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		Writelength, err = writer.Write(bytess)
+		_, err = writer.Write(bytess)
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
@@ -138,10 +161,10 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		fmt.Println("WROTED 200: ", Writelength)
+		//fmt.Println("WROTED 200: ", Writelength)
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		go write(client_to_proxy, proxy_to_server)
+		write(client_to_proxy, proxy_to_server)
 
 	} else {
 		proxy_to_server, e := net.Dial("tcp", host[1]+":80")
@@ -151,7 +174,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		writer2 := bufio.NewWriter(proxy_to_server)
-		Writelength, e := writer2.Write([]byte(message))
+		_, e = writer2.Write([]byte(message))
 		if e != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", e)
 			return
@@ -161,10 +184,10 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR6 ", e)
 			return
 		}
-		fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
+		//fmt.Println("WROTE 80 Header: " + strconv.Itoa(Writelength))
 
 		go read(client_to_proxy, proxy_to_server, reader)
-		go write(client_to_proxy, proxy_to_server)
+		write(client_to_proxy, proxy_to_server)
 	}
 }
 
