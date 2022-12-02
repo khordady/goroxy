@@ -17,6 +17,7 @@ type strServerConfig struct {
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
+	ListenEncryptionIV   string
 	ListenAuthentication bool
 	ListenUsers          []strUser
 }
@@ -58,6 +59,8 @@ func main() {
 	}
 
 	fmt.Println("Start server...")
+
+	initializeEncrypter()
 
 	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 

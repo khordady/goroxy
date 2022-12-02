@@ -15,6 +15,7 @@ type strClientConfig struct {
 	ListenPort           string
 	ListenEncryption     string
 	ListenEncryptionKey  string
+	ListenEncryptionIV   string
 	ListenAuthentication bool
 	ListenChain          bool
 	ListenUsers          []strUser
@@ -23,6 +24,7 @@ type strClientConfig struct {
 	ServerPort           string
 	SendEncryption       string
 	SendEncryptionKey    string
+	SendEncryptionIV     string
 	SendAuthentication   bool
 	SendUserName         string
 	SendPassword         string
@@ -71,6 +73,8 @@ func main() {
 	}
 
 	fmt.Println("GOROXY: Start Client Listening ...")
+
+	initializeEncrypter()
 
 	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
@@ -121,7 +125,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	if jjConfig.SendEncryption == "AES" {
-		message = encryptAES(message, len(message), jjConfig.SendEncryptionKey)
+		message = encryptAES(message, len(message), jjConfig.SendEncryptionKey, send_encrypter)
 	}
 
 	if jjConfig.ReadServerFirst {

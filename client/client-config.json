@@ -2,6 +2,7 @@
   "ListenPort": "8000",
   "ListenEncryption": "None",
   "ListenEncryptionKey": "SOMETHING 16 bit",
+  "ListenEncryptionIV": "SOMETHING 16 bit",
   "ListenAuthentication": false,
   "ListenChain": false,
   "ListenUsers": [
@@ -15,6 +16,7 @@
   "ServerPort": "7373",
   "SendEncryption": "AES",
   "SendEncryptionKey": "SOMETHING 16 bit",
+  "SendEncryptionIV": "SOMETHING 16 bit",
   "SendAuthentication": true,
   "SendUserName": "Goroxy",
   "SendPassword": "Goroxy"

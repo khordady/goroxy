@@ -7,10 +7,19 @@ import (
 	"strings"
 )
 
-var cc cipher.Block
+var encrypter cipher.BlockMode
+var decrypter cipher.BlockMode
+
+func initializeEncrypter() {
+	listen_aesc, err := aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
+	if err != nil {
+		fmt.Println(err)
+	}
+	encrypter = cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
+	decrypter = cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
+}
 
 func encryptAES(buffer []byte, length int, key string) []byte {
-	//start := time.Now()
 	finalLength := length + 4
 	key_length := len(key)
 	plus := (length + 4) % key_length
@@ -22,43 +31,20 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	copyArray(intTobytes(length), finalBytes, 0)
 	copyArray(buffer[:length], finalBytes, 4)
 
-	var err error
-	if cc == nil {
-		cc, err = aes.NewCipher([]byte(key))
-		if err != nil {
-			fmt.Println(err)
-			return nil
-		}
-	}
 	msgByte := make([]byte, finalLength)
 
 	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
-		cc.Encrypt(msgByte[i:j], finalBytes[i:j])
+		encrypter.CryptBlocks(msgByte[i:j], finalBytes[i:j])
 	}
-	//elapsed := time.Since(start)
-	//fmt.Println("Encryption elapsed ", elapsed.Milliseconds())
 	return msgByte
 }
 
 func decryptAES(buffer []byte, length int, key string) []byte {
-	//start := time.Now()
 	key_length := len(key)
-	var err error
-	if cc == nil {
-		cc, err = aes.NewCipher([]byte(key))
-		if err != nil {
-			fmt.Println(err)
-			return nil
-		}
-	}
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
 	msgByte := make([]byte, length)
 
 	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
-		cc.Decrypt(msgByte[i:j], buffer[i:j])
+		decrypter.CryptBlocks(msgByte[i:j], buffer[i:j])
 	}
 
 	decrypted_buffers := make([]byte, 0)
@@ -66,8 +52,6 @@ func decryptAES(buffer []byte, length int, key string) []byte {
 	leng := bytesToint(msgByte[:4])
 	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
-	//elapsed := time.Since(start)
-	//fmt.Println("Decryption elapsed ", elapsed.Milliseconds())
 	return decrypted_buffers
 }
 

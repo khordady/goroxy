@@ -7,10 +7,28 @@ import (
 	"strings"
 )
 
-var cc cipher.Block
+var send_encrypter cipher.BlockMode
+var send_decrypter cipher.BlockMode
+var listen_encrypter cipher.BlockMode
+var listen_decrypter cipher.BlockMode
 
-func encryptAES(buffer []byte, length int, key string) []byte {
-	//start := time.Now()
+func initializeEncrypter() {
+	send_aesc, err := aes.NewCipher([]byte(jjConfig.SendEncryptionKey))
+	if err != nil {
+		fmt.Println(err)
+	}
+	send_encrypter = cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV))
+	send_decrypter = cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV))
+
+	listen_aesc, err := aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
+	if err != nil {
+		fmt.Println(err)
+	}
+	listen_encrypter = cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
+	listen_decrypter = cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
+}
+
+func encryptAES(buffer []byte, length int, key string, encrypter cipher.BlockMode) []byte {
 	finalLength := length + 4
 	key_length := len(key)
 	plus := (length + 4) % key_length
@@ -22,52 +40,21 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 	copyArray(intTobytes(length), finalBytes, 0)
 	copyArray(buffer[:length], finalBytes, 4)
 
-	var err error
-	if cc == nil {
-		cc, err = aes.NewCipher([]byte(key))
-		if err != nil {
-			fmt.Println(err)
-			return nil
-		}
-	}
 	msgByte := make([]byte, finalLength)
-
-	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
-		cc.Encrypt(msgByte[i:j], finalBytes[i:j])
-	}
-	//elapsed := time.Since(start)
-	//fmt.Println("Encryption elapsed ", elapsed.Milliseconds())
+	encrypter.CryptBlocks(msgByte, finalBytes)
 	return msgByte
 }
 
-func decryptAES(buffer []byte, length int, key string) []byte {
-	//start := time.Now()
-	key_length := len(key)
-	var err error
-	if cc == nil {
-		cc, err = aes.NewCipher([]byte(key))
-		if err != nil {
-			fmt.Println(err)
-			return nil
-		}
-	}
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
+func decryptAES(buffer []byte, length int, key string, decrypter cipher.BlockMode) []byte {
 	msgByte := make([]byte, length)
 
-	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
-		cc.Decrypt(msgByte[i:j], buffer[i:j])
-	}
+	decrypter.CryptBlocks(msgByte, buffer)
 
 	decrypted_buffers := make([]byte, 0)
 
 	leng := bytesToint(msgByte[:4])
 	decrypted_buffers = append(decrypted_buffers, msgByte[4:4+leng]...)
 
-	//elapsed := time.Since(start)
-	//fmt.Println("Decryption elapsed ", elapsed.Milliseconds())
 	return decrypted_buffers
 }
 
@@ -79,7 +66,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, crypto_key)
+		buffer = decryptAES(buffer, length, crypto_key, listen_decrypter)
 	}
 
 	message := string(buffer)
@@ -153,7 +140,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey, listen_decrypter)
 		break
 	}
 
@@ -162,7 +149,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, send_encrypter)
 		break
 	}
 	return newBuffr
@@ -185,7 +172,7 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey, send_decrypter)
 		break
 	}
 
@@ -194,7 +181,7 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, listen_encrypter)
 		break
 	}
 	return newBuffr
