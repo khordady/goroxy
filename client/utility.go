@@ -45,10 +45,10 @@ func encryptAES(buffer []byte, length int, key string, encrypter cipher.BlockMod
 	return msgByte
 }
 
-func decryptAES(buffer []byte, length int, key string, decrypter cipher.BlockMode) []byte {
+func decryptAES(buffer []byte, length int, decrypter cipher.BlockMode) []byte {
 	msgByte := make([]byte, length)
 
-	decrypter.CryptBlocks(msgByte, buffer)
+	decrypter.CryptBlocks(msgByte, buffer[:length])
 
 	decrypted_buffers := make([]byte, 0)
 
@@ -66,7 +66,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, crypto_key, listen_decrypter)
+		buffer = decryptAES(buffer, length, listen_decrypter)
 	}
 
 	message := string(buffer)
@@ -140,7 +140,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey, listen_decrypter)
+		newBuffr = decryptAES(buffer, length, listen_decrypter)
 		break
 	}
 
@@ -172,7 +172,7 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey, send_decrypter)
+		newBuffr = decryptAES(buffer, length, send_decrypter)
 		break
 	}
 

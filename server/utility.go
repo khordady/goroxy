@@ -33,19 +33,14 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 
 	msgByte := make([]byte, finalLength)
 
-	for i, j := 0, key_length; i < finalLength; i, j = i+key_length, j+key_length {
-		encrypter.CryptBlocks(msgByte[i:j], finalBytes[i:j])
-	}
+	encrypter.CryptBlocks(msgByte, finalBytes)
 	return msgByte
 }
 
-func decryptAES(buffer []byte, length int, key string) []byte {
-	key_length := len(key)
+func decryptAES(buffer []byte, length int) []byte {
 	msgByte := make([]byte, length)
 
-	for i, j := 0, key_length; i < length; i, j = i+key_length, j+key_length {
-		decrypter.CryptBlocks(msgByte[i:j], buffer[i:j])
-	}
+	decrypter.CryptBlocks(msgByte, buffer[:length])
 
 	decrypted_buffers := make([]byte, 0)
 
@@ -62,7 +57,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, crypto_key)
+		buffer = decryptAES(buffer, length)
 	}
 
 	message := string(buffer)
@@ -130,7 +125,7 @@ func processToHostBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, jjConfig.ListenEncryptionKey)
+		newBuffr = decryptAES(buffer, length)
 		break
 	}
 	return newBuffr
