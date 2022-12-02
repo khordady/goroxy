@@ -7,25 +7,21 @@ import (
 	"strings"
 )
 
-var send_encrypter cipher.BlockMode
-var send_decrypter cipher.BlockMode
-var listen_encrypter cipher.BlockMode
-var listen_decrypter cipher.BlockMode
+var send_aesc cipher.Block
+var listen_aesc cipher.Block
 
 func initializeEncrypter() {
-	send_aesc, err := aes.NewCipher([]byte(jjConfig.SendEncryptionKey))
+	var err error
+	send_aesc, err = aes.NewCipher([]byte(jjConfig.SendEncryptionKey))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	send_encrypter = cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV))
-	send_decrypter = cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV))
-
-	listen_aesc, err := aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
+	listen_aesc, err = aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	listen_encrypter = cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
-	listen_decrypter = cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
 }
 
 func encryptAES(buffer []byte, length int, key string, encrypter cipher.BlockMode) []byte {
@@ -66,7 +62,7 @@ func processReceived(buffer []byte, length int, authentication bool, users []str
 		break
 
 	case "AES":
-		buffer = decryptAES(buffer, length, listen_decrypter)
+		buffer = decryptAES(buffer, length, cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV)))
 	}
 
 	message := string(buffer)
@@ -140,7 +136,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, listen_decrypter)
+		newBuffr = decryptAES(buffer, length, cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV)))
 		break
 	}
 
@@ -149,7 +145,7 @@ func processToProxyBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, send_encrypter)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
 		break
 	}
 	return newBuffr
@@ -172,7 +168,7 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = decryptAES(buffer, length, send_decrypter)
+		newBuffr = decryptAES(buffer, length, cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
 		break
 	}
 
@@ -181,7 +177,7 @@ func processToBrowserBuffer(buffer []byte, length int) []byte {
 		break
 
 	case "AES":
-		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, listen_encrypter)
+		newBuffr = encryptAES(newBuffr, len(newBuffr), jjConfig.SendEncryptionKey, cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV)))
 		break
 	}
 	return newBuffr

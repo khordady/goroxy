@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/cipher"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -77,8 +78,20 @@ func main() {
 	initializeEncrypter()
 
 	a := []byte("THIS IS TEST THIS IS TEST THIS IS TEST THIS IS TEST ")
-	b := encryptAES(a, len(a), jjConfig.SendEncryptionKey, send_encrypter)
-	fmt.Println(b)
+	c := processToProxyBuffer(a, len(a))
+	fmt.Println(c)
+
+	b := encryptAES(a, len(a), jjConfig.SendEncryptionKey, cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
+	//fmt.Println(b)
+
+	b1 := decryptAES(b, len(b), cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
+	fmt.Println(string(b1))
+
+	//d := encryptAES(a, len(a), jjConfig.SendEncryptionKey, send_encrypter)
+	//fmt.Println(d)
+
+	c1 := decryptAES(c, len(c), cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
+	fmt.Println(string(c1))
 
 	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
@@ -129,7 +142,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	if jjConfig.SendEncryption == "AES" {
-		message = encryptAES(message, len(message), jjConfig.SendEncryptionKey, send_encrypter)
+		message = encryptAES(message, len(message), jjConfig.SendEncryptionKey, cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
 	}
 
 	if jjConfig.ReadServerFirst {
