@@ -62,6 +62,10 @@ func main() {
 
 	initializeEncrypter()
 
+	a := []byte("THIS IS TEST THIS IS TEST THIS IS TEST THIS IS TEST ")
+	b := encryptAES(a, len(a), jjConfig.ListenEncryptionKey)
+	fmt.Println(b)
+
 	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
 	for {
