@@ -77,22 +77,6 @@ func main() {
 
 	initializeEncrypter()
 
-	a := []byte("THIS IS TEST THIS IS TEST THIS IS TEST THIS IS TEST ")
-	c := processToProxyBuffer(a, len(a))
-	fmt.Println(c)
-
-	b := encryptAES(a, len(a), jjConfig.SendEncryptionKey, cipher.NewCBCEncrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
-	//fmt.Println(b)
-
-	b1 := decryptAES(b, len(b), cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
-	fmt.Println(string(b1))
-
-	//d := encryptAES(a, len(a), jjConfig.SendEncryptionKey, send_encrypter)
-	//fmt.Println(d)
-
-	c1 := decryptAES(c, len(c), cipher.NewCBCDecrypter(send_aesc, []byte(jjConfig.SendEncryptionIV)))
-	fmt.Println(string(c1))
-
 	ln, _ := net.Listen("tcp", ":"+jjConfig.ListenPort)
 
 	for {
@@ -120,8 +104,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
-	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers,
-		jjConfig.ListenEncryption, jjConfig.ListenEncryptionKey)
+	request := processReceived(buffer, length, jjConfig.ListenAuthentication, jjConfig.ListenUsers, jjConfig.ListenEncryption)
 	if request == "" {
 		return
 	}

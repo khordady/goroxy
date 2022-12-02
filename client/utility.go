@@ -54,8 +54,7 @@ func decryptAES(buffer []byte, length int, decrypter cipher.BlockMode) []byte {
 	return decrypted_buffers
 }
 
-func processReceived(buffer []byte, length int, authentication bool, users []strUser,
-	crypto string, crypto_key string) string {
+func processReceived(buffer []byte, length int, authentication bool, users []strUser, crypto string) string {
 	switch crypto {
 	case "None":
 		buffer = buffer[:length]
