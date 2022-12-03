@@ -7,16 +7,14 @@ import (
 	"strings"
 )
 
-var encrypter cipher.BlockMode
-var decrypter cipher.BlockMode
+var listen_aesc cipher.Block
 
 func initializeEncrypter() {
-	listen_aesc, err := aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
+	var err error
+	listen_aesc, err = aes.NewCipher([]byte(jjConfig.ListenEncryptionKey))
 	if err != nil {
 		fmt.Println(err)
 	}
-	encrypter = cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
-	decrypter = cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
 }
 
 func encryptAES(buffer []byte, length int, key string) []byte {
@@ -33,12 +31,16 @@ func encryptAES(buffer []byte, length int, key string) []byte {
 
 	msgByte := make([]byte, finalLength)
 
+	encrypter := cipher.NewCBCEncrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
+
 	encrypter.CryptBlocks(msgByte, finalBytes)
 	return msgByte
 }
 
 func decryptAES(buffer []byte, length int) []byte {
 	msgByte := make([]byte, length)
+
+	decrypter := cipher.NewCBCDecrypter(listen_aesc, []byte(jjConfig.ListenEncryptionIV))
 
 	decrypter.CryptBlocks(msgByte, buffer[:length])
 
