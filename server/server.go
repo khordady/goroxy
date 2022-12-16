@@ -281,7 +281,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
 
-	fmt.Println("started Reading")
+	//fmt.Println("started Reading")
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
