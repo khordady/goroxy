@@ -39,6 +39,7 @@ type strUser struct {
 var jjConfig strClientConfig
 
 var bufferSize = 32 * 1024
+var logger = false
 
 func main() {
 	fmt.Println("Reading client-config.json")
@@ -296,7 +297,7 @@ func readBuffer(buffer []byte, src net.Conn) (int, error) {
 		//fmt.Println("LENG > 0 ", leng)
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
-			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE", size)
+			return 0, fmt.Errorf("ERROR OVER SIZE", size)
 		}
 		for total < realSize {
 			length, errrr := src.Read(buffer[total:realSize])

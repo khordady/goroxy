@@ -29,6 +29,7 @@ type strUser struct {
 var jjConfig strServerConfig
 
 var bufferSize = 32 * 1024
+var logger = true
 
 func main() {
 	fmt.Println("Reading server-config.json")
@@ -131,7 +132,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		fmt.Println("CONNECTED TO: " + host[1])
+		printer("CONNECTED TO: " + host[1])
 
 		//length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		if err != nil {
@@ -142,7 +143,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
 		}
 
-		_, err := writer.Write(intTobytes(len(bytess)))
+		write_length, err := writer.Write(intTobytes(len(bytess)))
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
@@ -162,7 +163,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		//fmt.Println("WROTED 200: ", Writelength)
+		printer("WROTED ", write_length)
 
 		go read(client_to_proxy, proxy_to_server, reader)
 		write(client_to_proxy, proxy_to_server)
@@ -175,7 +176,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		}
 
 		writer2 := bufio.NewWriter(proxy_to_server)
-		_, e = writer2.Write([]byte(message))
+		write_length, e := writer2.Write([]byte(message))
 		if e != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", e)
 			return
@@ -185,10 +186,16 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR6 ", e)
 			return
 		}
-		//fmt.Println("WROTE 80 Header: ")
+		printer("WROTED ", write_length)
 
 		go read(client_to_proxy, proxy_to_server, reader)
 		write(client_to_proxy, proxy_to_server)
+	}
+}
+
+func printer(message string, params ...int) {
+	if logger {
+		fmt.Println(message, params[0])
 	}
 }
 
