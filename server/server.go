@@ -119,6 +119,7 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 
 	//printer("MESSAGE IS: "+message, 0)
+	printer("Request Connect Received", 0)
 
 	var host []string
 	headers := strings.Split(message, "\r\n")

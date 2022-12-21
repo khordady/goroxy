@@ -39,7 +39,7 @@ type strUser struct {
 var jjConfig strClientConfig
 
 var bufferSize = 32 * 1024
-var logger = false
+var logger = true
 
 func main() {
 	fmt.Println("Reading client-config.json")
@@ -124,12 +124,12 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	if jjConfig.ReadServerFirst {
-		_, err := readBuffer(buffer, client_to_proxy)
+		length, err := readBuffer(buffer, client_to_proxy)
 		if err != nil {
 			fmt.Println("ERR31 ", e)
 			return
 		}
-		fmt.Println("READED FIRST")
+		fmt.Println("READED FIRST ", length)
 	}
 
 	writer := bufio.NewWriter(client_to_proxy)
