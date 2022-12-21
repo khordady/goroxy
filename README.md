@@ -14,12 +14,12 @@ Use user/pass for protection</br>
 2) config server and client .json file</br>
 3) run Server on your vps(to run a file in background use 'nohup ./server &')</br>
 4) run Client in your local pc</br>
-5) set http/https proxy in your app (like firefox) and coonect to Client</br>
+5) set http/https proxy in your app (like firefox) and connect to Client</br>
 hope you enjoy :)</br>
 
 <h3>how to compile and use on any os</h3>
 1) Download and install golang sdk atleast 1.19</br>
-2) compile each one seperatly</br>
+2) compile each folder seperatly</br>
 3) config .json file</br>
 4) and then run</br>
 hope you enjoy  :)</br>
