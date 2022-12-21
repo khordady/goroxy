@@ -66,7 +66,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		//err = conn.SetReadDeadline(time.Time{})
+		err = conn.SetReadDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -274,19 +274,27 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader
 func readBuffer(buffer []byte, reader *bufio.Reader, sck net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
+	var t_total = 0
 	var leng = 0
 	var errr error
 
 	fmt.Println("started Reading")
-	//for {
-	//	err := sck.SetReadDeadline(time.Now().Add(1 * time.Second))
-	//	if err != nil {
-	//		return 0, fmt.Errorf(time.StampMilli, " TIMEOUT ERROR")
-	//	}
-	//	leng, errr = reader.Read(size)
-	//}
+	for {
+		err := sck.SetReadDeadline(time.Now().Add(1 * time.Second))
+		if err != nil {
+			return 0, fmt.Errorf(time.StampMilli, " TIMEOUT ERROR")
+		}
+		leng, errr = reader.Read(size)
+		t_total = t_total + leng
+		if t_total == 4 {
+			break
+		}
+	}
 
-	leng, errr = reader.Read(size)
+	err := sck.SetReadDeadline(time.Time{})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	if leng > 0 {
 		realSize := bytesToint(size)
