@@ -148,7 +148,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return
 		}
-		_, err = writer.Write(bytess)
+		write_length, err = writer.Write(bytess)
 		if err != nil {
 			fmt.Println(time.StampMilli, " ERROR42 ", err)
 			return

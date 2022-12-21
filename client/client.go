@@ -129,6 +129,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 			fmt.Println("ERR31 ", e)
 			return
 		}
+		fmt.Println("READED FIRST")
 	}
 
 	writer := bufio.NewWriter(client_to_proxy)
