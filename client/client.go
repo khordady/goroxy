@@ -285,13 +285,23 @@ func readProxy(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
-	printer("started Reading", 0)
+	var t_total = 0
+	var leng = 0
+	var errr error
 
-	leng, errr := src.Read(size)
-	printer("LENG is: ", leng)
-	if errr != nil {
-		fmt.Println("ERRROR IS: ", errr)
+	printer("started Reading", 0)
+	for {
+		err := src.SetReadDeadline(time.Now().Add(1 * time.Second))
+		if err != nil {
+			return 0, fmt.Errorf(time.StampMilli, " TIMEOUT ERROR")
+		}
+		leng, errr = src.Read(size)
+		t_total = t_total + leng
+		if t_total == 4 {
+			break
+		}
 	}
+
 	if leng > 0 {
 		printer("LENG > 0 ", leng)
 		realSize := bytesToint(size)

@@ -29,7 +29,7 @@ type strUser struct {
 var jjConfig strServerConfig
 
 var bufferSize = 32 * 1024
-var logger = false
+var logger = true
 
 func main() {
 	fmt.Println("Reading server-config.json")
@@ -297,6 +297,7 @@ func readBuffer(buffer []byte, reader *bufio.Reader, sck net.Conn) (int, error) 
 	}
 
 	if leng > 0 {
+		printer("LENG > 0 ", leng)
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE")
