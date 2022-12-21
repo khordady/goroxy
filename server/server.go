@@ -29,7 +29,7 @@ type strUser struct {
 var jjConfig strServerConfig
 
 var bufferSize = 32 * 1024
-var logger = true
+var logger = false
 
 func main() {
 	fmt.Println("Reading server-config.json")
