@@ -285,22 +285,22 @@ func readProxy(client_to_proxy net.Conn, browser_to_client net.Conn) {
 func readBuffer(buffer []byte, src net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
-	fmt.Println("started Reading")
+	printer("started Reading", 0)
 
 	leng, errr := src.Read(size)
-	//fmt.Println("LENG is: ", leng)
+	printer("LENG is: ", leng)
 	if errr != nil {
 		fmt.Println("ERRROR IS: ", errr)
 	}
 	if leng > 0 {
-		//fmt.Println("LENG > 0 ", leng)
+		printer("LENG > 0 ", leng)
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf("ERROR OVER SIZE", size)
 		}
 		for total < realSize {
 			length, errrr := src.Read(buffer[total:realSize])
-			//fmt.Println("Readed is: ", length)
+			printer("Readed is: ", length)
 			total = total + length
 
 			if errrr != nil {

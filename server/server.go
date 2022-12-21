@@ -104,6 +104,10 @@ func handleSocket(client_to_proxy net.Conn) {
 	reader := bufio.NewReader(client_to_proxy)
 
 	length, err := readBuffer(buffer, reader)
+	if err != nil {
+		fmt.Println(" Error 20", err)
+		return
+	}
 
 	if length == 0 {
 		return
@@ -114,7 +118,7 @@ func handleSocket(client_to_proxy net.Conn) {
 		return
 	}
 
-	//fmt.Println("MESSAGE IS: " + message)
+	printer("MESSAGE IS: "+message, 0)
 
 	var host []string
 	headers := strings.Split(message, "\r\n")
@@ -134,10 +138,6 @@ func handleSocket(client_to_proxy net.Conn) {
 
 		printer("CONNECTED TO: "+host[1], 0)
 
-		//length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
-		if err != nil {
-			return
-		}
 		bytess := []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 		if jjConfig.ListenEncryption == "AES" {
 			bytess = encryptAES(bytess, len(bytess), jjConfig.ListenEncryptionKey)
@@ -274,14 +274,14 @@ func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
 
-	//fmt.Println("started Reading")
+	fmt.Println("started Reading")
 	leng, errr := reader.Read(size)
 	if leng > 0 {
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
 			return 0, fmt.Errorf(time.StampMilli, " ERROR OVER SIZE")
 		}
-		//fmt.Println("Real size is: ", realSize)
+		printer("Real size is: ", realSize)
 		for total < realSize {
 			length, errrr := reader.Read(buffer[total:realSize])
 			printer("Readed is: ", length)
