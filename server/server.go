@@ -132,7 +132,7 @@ func handleSocket(client_to_proxy net.Conn) {
 			return
 		}
 
-		printer("CONNECTED TO: " + host[1])
+		printer("CONNECTED TO: "+host[1], 0)
 
 		//length, err := client_to_proxy.Write([]byte("TEST MESSAGE FROM GITHUB"))
 		if err != nil {
@@ -193,9 +193,9 @@ func handleSocket(client_to_proxy net.Conn) {
 	}
 }
 
-func printer(message string, params ...int) {
+func printer(message string, params int) {
 	if logger {
-		fmt.Println(message, params[0])
+		fmt.Println(message, params)
 	}
 }
 
