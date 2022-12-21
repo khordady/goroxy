@@ -66,7 +66,7 @@ func main() {
 
 	for {
 		conn, _ := ln.Accept()
-		err = conn.SetDeadline(time.Time{})
+		//err = conn.SetReadDeadline(time.Time{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -103,7 +103,7 @@ func handleSocket(client_to_proxy net.Conn) {
 	buffer := make([]byte, 9*1024)
 	reader := bufio.NewReader(client_to_proxy)
 
-	length, err := readBuffer(buffer, reader)
+	length, err := readBuffer(buffer, reader, client_to_proxy)
 	if err != nil {
 		fmt.Println(" Error 20", err)
 		return
@@ -241,7 +241,7 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader
 	for {
 		bufferReader := make([]byte, bufferSize)
 
-		length, errr := readBuffer(bufferReader, reader)
+		length, errr := readBuffer(bufferReader, reader, client_to_proxy)
 		if length > 0 {
 			//fmt.Println(time.StampMilli, " Read from client to proxy: ", length)
 
@@ -271,12 +271,23 @@ func read(client_to_proxy net.Conn, proxy_to_host net.Conn, reader *bufio.Reader
 	}
 }
 
-func readBuffer(buffer []byte, reader *bufio.Reader) (int, error) {
+func readBuffer(buffer []byte, reader *bufio.Reader, sck net.Conn) (int, error) {
 	size := make([]byte, 4)
 	var total = 0
+	var leng = 0
+	var errr error
 
 	fmt.Println("started Reading")
-	leng, errr := reader.Read(size)
+	//for {
+	//	err := sck.SetReadDeadline(time.Now().Add(1 * time.Second))
+	//	if err != nil {
+	//		return 0, fmt.Errorf(time.StampMilli, " TIMEOUT ERROR")
+	//	}
+	//	leng, errr = reader.Read(size)
+	//}
+
+	leng, errr = reader.Read(size)
+
 	if leng > 0 {
 		realSize := bytesToint(size)
 		if realSize <= 0 || realSize > bufferSize {
