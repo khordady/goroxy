@@ -111,7 +111,7 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 	message = append(message, []byte(request)...)
 
-	//fmt.Println("Message is: " + request)
+	printer("Message is: "+request, 0)
 
 	client_to_proxy, e := net.Dial("tcp", jjConfig.Server+":"+jjConfig.ServerPort)
 	if e != nil {
@@ -133,12 +133,12 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 	}
 
 	writer := bufio.NewWriter(client_to_proxy)
-	_, err = writer.Write(intTobytes(len(message)))
+	write_length, err := writer.Write(intTobytes(len(message)))
 	if err != nil {
 		fmt.Println("ERR31 ", e)
 		return
 	}
-	_, e = writer.Write(message)
+	write_length, e = writer.Write(message)
 	if e != nil {
 		fmt.Println("ERR3 ", e)
 		return
@@ -149,13 +149,20 @@ func handleBrowserToClient(browser_to_client net.Conn) {
 		return
 	}
 
+	printer("WROTED: ", write_length)
+
 	if jjConfig.ListenChain {
 		go readChain(writer, browser_to_client)
 	} else {
 		go readBrowser(writer, browser_to_client)
 	}
 	readProxy(client_to_proxy, browser_to_client)
+}
 
+func printer(message string, params int) {
+	if logger {
+		fmt.Println(message, params)
+	}
 }
 
 func readBrowser(writer *bufio.Writer, browser_to_client net.Conn) {
@@ -167,12 +174,10 @@ func readBrowser(writer *bufio.Writer, browser_to_client net.Conn) {
 		length, errr := browser_to_client.Read(bufferReader)
 
 		if length > 0 {
-			//fmt.Println(time.StampMilli, " READ from browser to client : ", length)
-			//fmt.Println(string(buffer[:length]))
+			printer(" READ from browser to client : ", length)
 
 			bufferWriter := processToProxyBuffer(bufferReader, length)
-			//fmt.Println(time.StampMilli, "Decode WRITE from client to proxy: ", len(bufferWriter))
-			//fmt.Println(string(buffer))
+			printer("Decode WRITE from client to proxy: ", len(bufferWriter))
 
 			writeLength, errw := writer.Write(intTobytes(len(bufferWriter)))
 			if errw != nil {
@@ -192,7 +197,7 @@ func readBrowser(writer *bufio.Writer, browser_to_client net.Conn) {
 			if writeLength == 0 {
 				fmt.Println(time.StampMilli, " ERROR Write ")
 			}
-			//fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writeLength)
+			printer(" WRITE from client to proxy: ", writeLength)
 		}
 		if errr != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", errr)
@@ -210,8 +215,7 @@ func readChain(writer *bufio.Writer, chain_to_client net.Conn) {
 		length, errr := readBuffer(bufferReader[:bufferSize], chain_to_client)
 
 		if length > 0 {
-			//fmt.Println(time.StampMilli, " READ from browser to client : ", length)
-			//fmt.Println(string(buffer[:length]))
+			printer(" READ from browser to client : ", length)
 
 			bufferWriter := processToProxyBuffer(bufferReader, length)
 			//fmt.Println(time.StampMilli, "Decode WRITE from client to proxy: ", len(bufferWriter))
@@ -233,10 +237,7 @@ func readChain(writer *bufio.Writer, chain_to_client net.Conn) {
 				fmt.Println("ERR6 ", errw)
 				return
 			}
-			if writeLength == 0 {
-				fmt.Println(time.StampMilli, " ERROR Write ")
-			}
-			//fmt.Println(time.StampMilli, " WRITE from client to proxy: ", writeLength)
+			printer(" WRITE from client to proxy: ", writeLength)
 		}
 		if errr != nil {
 			fmt.Println(time.StampMilli, " ERROR6 ", errr)
@@ -254,11 +255,11 @@ func readProxy(client_to_proxy net.Conn, browser_to_client net.Conn) {
 	for {
 		total, errr := readBuffer(bufferReader[:bufferSize], client_to_proxy)
 		if total > 0 {
-			//fmt.Println(time.StampMilli, " Encoded READ from proxy to client: ", total)
+			printer(" Encoded READ from proxy to client: ", total)
 			//fmt.Println(string(buffer))
 
 			bufferWriter := processToBrowserBuffer(bufferReader, total)
-			//fmt.Println(time.StampMilli, " Decoded WRITE from client to browser: ", total)
+			printer(" Decoded WRITE from client to browser: ", total)
 			//fmt.Println(string(buffer))
 
 			write_length, errw := writer.Write(bufferWriter)
@@ -271,10 +272,7 @@ func readProxy(client_to_proxy net.Conn, browser_to_client net.Conn) {
 				fmt.Println(time.StampMilli, " ERROR8 ", errw)
 				return
 			}
-			if write_length == 0 {
-				fmt.Println(time.StampMilli, " ERROR Write ")
-			}
-			//fmt.Println(time.StampMilli+" WRITE from client to browser: ", write_length)
+			printer(" WRITE from client to browser: ", write_length)
 		}
 
 		if errr != nil {
