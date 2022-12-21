@@ -5,7 +5,7 @@ Support http 1.1 </br>
 Support chain proxy(use 'client' on not-final servers)</br>
 Cross platform(Windows, Linux, MacOS, Android)</br>
 Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a></br>
-AES/ECB encryption for innitial connection</br>
+AES/CBC encryption for innitial connection</br>
 Use tcp connection, so will never be blocked</br>
 Use user/pass for protection</br>
 
