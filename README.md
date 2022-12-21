@@ -5,7 +5,7 @@ Support http 1.1 </br>
 Support chain proxy(use 'client' on not-final servers)</br>
 Cross platform(Windows, Linux, MacOS, Android)</br>
 Open source <a href="https://github.com/khordady/Goroxy_Android">Android app</a></br>
-AES/ECB encryption for innitial connection</br>
+AES/CBC encryption for innitial connection</br>
 Use tcp connection, so will never be blocked</br>
 Use user/pass for protection</br>
 
@@ -14,12 +14,12 @@ Use user/pass for protection</br>
 2) config server and client .json file</br>
 3) run Server on your vps(to run a file in background use 'nohup ./server &')</br>
 4) run Client in your local pc</br>
-5) set http/https proxy in your app (like firefox) and coonect to Client</br>
+5) set http/https proxy in your app (like firefox) and connect to Client</br>
 hope you enjoy :)</br>
 
 <h3>how to compile and use on any os</h3>
 1) Download and install golang sdk atleast 1.19</br>
-2) compile each one seperatly</br>
+2) compile each folder seperatly</br>
 3) config .json file</br>
 4) and then run</br>
 hope you enjoy  :)</br>
